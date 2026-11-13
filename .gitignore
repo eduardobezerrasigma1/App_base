@@ -1,0 +1,25 @@
+# Dependências & Builds
+node_modules/
+dist/
+build/
+.next/
+out/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# Variáveis de Ambiente e Segredos (versionar apenas .env.example)
+.env
+.env.*
+!.env.example
+
+# Sistema Operacional & Editores
+.DS_Store
+Thumbs.db
+*.log
+*.swp
+.idea/
+.vscode/*
+!.vscode/extensions.json
