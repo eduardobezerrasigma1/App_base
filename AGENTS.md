@@ -24,23 +24,36 @@ Este projeto opera sob a metodologia **Criador Assistido Geral de Apps (Vibecodi
 
 ---
 
-## 2. Blindagens Operacionais Padrão
+## 2. Postura Cognitiva & Modo de Decidir, Pensar e Agir (Transversal)
+
+1. **Visão 360° & Espinha Mestre (`Spine-First` + `Step-Budget`):** Proibido codar às pressas ou em saltos densos. Só inicie código após fechar o entendimento de **todas** as áreas (Dados, Core, Fluxos e UI) e receber o *"de acordo"* explícito do usuário. No **Turno 1 de código**, erga apenas a **Espinha Mestre compilável** (contratos + fachadas com *stubs* simples + casca navegável); nos turnos seguintes, acople **1 plug simples por vez**, mantendo o app sempre funcional (esqueleto simples + plugs simples = corpo final completo).
+2. **Franqueza Anti-Bajulação (`Pushback` Técnico):** Nunca concorde por educação com pedidos que violem simplicidade, segurança, performance ou contratos congelados; aponte o risco/custo oculto em até 3 linhas e proponha a alternativa limpa antes de executar.
+3. **Freio de Ambiguidade vs. Premissa Declarada:** Se uma lacuna afetar regra de negócio, cálculo, contrato ou dados de forma irreversível, **pare e pergunte**. Se for detalhe técnico reversível, adote o padrão mais simples e **declare explicitamente a premissa assumida**.
+4. **Leitura Antes da Ação:** Nunca deduza assinaturas, tipos, estados ou fluxos de memória; leia os arquivos e contratos reais envolvidos antes de propor mudanças ou editar código.
+5. **Navalha da Simplicidade (`YAGNI`):** Entre duas soluções válidas, escolha sempre a que exigir menos estado mutável, menos abstrações e menos arquivos tocados. Zero código especulativo "para o futuro".
+6. **Causa-Raiz & `Stop-Loss` em Bugs:** Proibido aplicar remendos por tentativa e erro; diagnostique e explique a causa-raiz antes de editar. Se **2 tentativas seguidas** falharem, **pare de editar código** e reavalie o desenho com o usuário.
+7. **Honestidade de Verificação:** Nunca declare algo "pronto/funcionando" apenas por ter escrito o código; ao concluir cada entrega, declare em 1 linha o que foi **verificado na prática** (scanner, build, runner do oráculo) e o que **falta validar manualmente**.
+
+---
+
+## 3. Blindagens Operacionais Padrão
 
 - **Stack Lock (Trava de Dependências):** É proibido instalar bibliotecas externas novas na Fase A ou B sem registro prévio em `docs/02-ARQUITETURA-FLUXOS.md`.
-- **Erros Auto-Diagnosticáveis:** `catch` vazio é proibido. Todo erro deve seguir o padrão `[MÓDULO:FUNÇÃO] Mensagem clara | Contexto`.
+- **Envelope `Result<T>` & Erros Auto-Diagnosticáveis:** `catch` vazio e `throw` solto entre módulos são proibidos. Fachadas falíveis retornam `{ ok: true, data } | { ok: false, error }` com tag `[MÓDULO:FUNÇÃO] Mensagem clara | Contexto`.
+- **Prova Executável do Oráculo & Micro-Scan (`Shift-Left`):** É proibido validar cálculos "de cabeça" no texto (exige runner executável contra `docs/golden-oracle.csv`) e todo turno que edite `src/` deve rodar `scan-vibecode.ps1` antes de encerrar.
 - **I/O Seguro & Não-Destrutivo:** Arquivos originais importados pelo usuário são somente-leitura (nunca sobrescritos). Todo estado persistido localmente deve conter `schemaVersion`.
 - **Blindagem de DNA Visual Enxuto:** Todas as telas geradas via Stitch ou código devem obedecer estritamente aos 12 Pilares, às 7 Regras Sênior e às 4 Diretrizes da Prova de Fogo em `docs/DESIGN.md` e `docs/04-PADRAO-UIUX.md` (Foco único, fontes de zero liso `tabular-nums`, sidebar em árvore máx. 2 níveis sem bolinhas, botões secundários *icon-only*, composição cromática 85/12/3, retorno do Nível 3 tipográfico sem seta quadrada, título de card sempre mais forte que metadado lateral e avisos exclusivamente em *toast* efêmero *bottom-up*).
 - **Checkpoints de Rollback:** Criar ponto de restauração (commit/tag ou snapshot) ao concluir a Fase A e ao concluir cada módulo da Fase B.
 
 ---
 
-## 3. Protocolo de Início e Fim de Turno/Chat (Acompanhamento Visual Obrigatório)
+## 4. Protocolo de Início, Pós-`/compact` e Fim de Turno/Chat
 
-1. **Ao Iniciar Qualquer Chat:**
-   - Leia `STATE.md` (estado atual, radar de etapas e próximo passo imediato).
+1. **Ao Iniciar Qualquer Chat ou Retomar Após `/compact`:**
+   - Leia `STATE.md` (estado atual, radar de etapas, próximo passo e a seção **Memória Negativa** para nunca reabrir ideias já vetadas). Se o projeto já estiver na Fase A/B/C, releia também `docs/03-CONTRATOS-DADOS.md`.
    - Consulte `docs/00-MANUAL-DEV.md` para identificar o roteamento de arquivos.
    - Ative a Skill `.agents/skills/modo-xx/SKILL.md` correspondente à tarefa.
 2. **Durante e Ao Encerrar Qualquer Etapa/Chat:**
    - **Exiba no Chat o Radar Visual de Progresso:** Ao concluir qualquer sub-etapa ou turno importante, mostre ao usuário o quadro simplificado do ciclo marcando o que está `✅ Concluído`, `⏳ Em Andamento (ATUAL)` e `⬜ Pendente` (e na Fase B, destaque sempre **`Chat B.X de N`** e qual será o próximo chat da fila).
-   - **Sobrescreva `STATE.md`** mantendo o Radar de Progresso atualizado, a fila de chats da Fase B e o próximo passo (apague históricos antigos que não importam mais para economizar tokens).
+   - **Sobrescreva `STATE.md`** mantendo o Radar de Progresso atualizado, as restrições/decisões descartadas (**Memória Negativa**), a fila de chats da Fase B e o próximo passo (apague históricos antigos para manter `<= 50 linhas`).
    - Se criou módulos ou pastas novas, mantenha a árvore e o Plano de Chats de `docs/02-ARQUITETURA-FLUXOS.md` sincronizados.

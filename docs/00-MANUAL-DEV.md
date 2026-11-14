@@ -33,19 +33,17 @@ Em todas as fases, a IA atualiza e exibe o progresso usando os marcadores `✅ C
   - `[ ] 0.1` Entrevista de Descoberta (`[modo-arquiteto]` + apoio tldraw/diagrams.net)
   - `[ ] 0.2` Criação física das Skills Especialistas extras em `.agents/skills/` (Regra 03)
   - `[ ] 0.3` Preenchimento de `docs/00` a `04`, `DESIGN.md` e estimativa preliminar de Chats da Fase B
-- **FASE A — *Walking Skeleton* & *Contract Freeze* (Chat 02 — Chat Único)**
-  - `[ ] A.1` Entrevista Tática Pré-Código (`[modo-arquiteto]`)
-  - `[ ] A.2` Contratos, Planilha-Oráculo (`golden-oracle.csv`), Mocks e Snapshot JSON (`[modo-dados]`)
-  - `[ ] A.3` Mapeamento de Fluxos e Guardas de Estado (`[modo-fluxos]`)
-  - `[ ] A.4` Template Mestre no Stitch (`StitchMCP`), download em `docs/ui-templates/` e `design-system/` (`[modo-uiux]`)
-  - `[ ] A.5` Esqueleto Funcional Core (`[modo-backend]`) + Telas Iniciais (`[modo-frontend]`)
-  - `[ ] A.6` **Marco Final da Fase A:** Decreto de `🔒 CONTRACT FREEZE` + **Fechamento da Fila Ordenada de Chats da Fase B (`B.1 a B.N`)** + Checkpoint Git
+- **FASE A — *Walking Skeleton* por *Step-Budget* & *Contract Freeze* (Chat 02 — Chat Único)**
+  - `[ ] A.1` Entrevista Tática 360° Pré-Código + **Aval Explícito do Usuário antes de codar** (`[modo-arquiteto]`)
+  - `[ ] A.2` **Turno 1 de Código — Espinha Mestre Compilável:** `contracts/` (`Result<T>`), Fachadas com *stubs* simples e `AppShell` navegável
+  - `[ ] A.3` **Plugs Simples (1 por Turno + Micro-Scan):** Dados/Mocks/Snapshot (`[modo-dados]`) $\rightarrow$ Guardas de Fluxo (`[modo-fluxos]`) $\rightarrow$ Template Mestre Stitch (`[modo-uiux]`) $\rightarrow$ Core + Runner `verify-oracle` (`[modo-backend]`) $\rightarrow$ Telas Iniciais (`[modo-frontend]`)
+  - `[ ] A.4` **Marco Final da Fase A:** `scan-vibecode.ps1` limpo + Decreto de `🔒 CONTRACT FREEZE` + **Fila Ordenada de Chats da Fase B (`B.1 a B.N`)** + Checkpoint Git
 - **FASE B — Refinamento Sênior em Chats Isolados (`Chats B.1 até B.N`)**
-  - *A quantidade exata de chats (`N`) e a ordem de execução são travadas no passo `A.6` e listadas em `STATE.md` e `02-ARQUITETURA-FLUXOS.md`.*
-- **FASE C — Auditoria Determinística & Homologação (Regra 05)**
-  - `[ ] C.1` Execução do `scan-vibecode.ps1` + Auditoria por Lente (`[modo-auditor]`) $\rightarrow$ `docs/audits/AUDIT-ATUAL.md`
-  - `[ ] C.2` Ciclo `/compact` $\rightarrow$ Correção cirúrgica pelo `[modo-especialista]`
-  - `[ ] C.3` Homologação final e Benchmark em `docs/05-HOMOLOGACAO-BENCHMARK.md`
+  - *A quantidade exata de chats (`N`) e a ordem de execução são travadas no encerramento da Fase A e listadas em `STATE.md` e `02-ARQUITETURA-FLUXOS.md` (cada chat roda Micro-Scan ao concluir).*
+- **FASE C — Auditoria Determinística, Homologação & Retroalimentação (Regra 05)**
+  - `[ ] C.1` Execução do `scan-vibecode.ps1` v2 + Auditoria por Lente (`[modo-auditor]`) $\rightarrow$ `docs/audits/AUDIT-ATUAL.md`
+  - `[ ] C.2` Ciclo `/compact` (relendo `STATE.md` + Memória Negativa) $\rightarrow$ Correção cirúrgica pelo `[modo-especialista]`
+  - `[ ] C.3` Homologação final, Benchmark e Destilação de Aprendizado (`/learn`) em `docs/05-HOMOLOGACAO-BENCHMARK.md`
 
 ### 2.2 Regra de Abertura, Quantidade e Ordem de Execução na Fase B
 Para que você saiba exatamente **quantos chats abrir** e **em qual sequência**, a Fase B segue a **Ordem *Bottom-Up* (da Fundação para a Casca Visual)**:
@@ -66,9 +64,9 @@ Para que você saiba exatamente **quantos chats abrir** e **em qual sequência**
 | :--- | :--- | :--- |
 | **Desenho e Correção de Fluxos / Entrevista** | **https://www.tldraw.com/** e **https://app.diagrams.net/** | No **início ou fim** das etapas de Entrevista (`[modo-arquiteto]`) e Fluxos (`[modo-fluxos]`), desenhe esboços ou rabisque correções visuais e cole o print no chat. |
 | **Prototipação e Coerência de Telas (UI/UX)** | **`docs/DESIGN.md` $\leftrightarrow$ `StitchMCP`** | O `[modo-uiux]` envia o `DESIGN.md` ao Stitch, você ajusta lá, e o MCP baixa o gabarito consolidado para `docs/ui-templates/`. |
-| **Validação Matemática 100% Exata** | **Planilha-Oráculo (`docs/golden-oracle.csv`)** | Monte no Excel/Sheets de 5 a 15 linhas com entradas e resultados esperados. O `[modo-backend]` valida o código até a diferença ser zero. |
+| **Validação Matemática 100% Exata** | **Planilha-Oráculo (`docs/golden-oracle.csv`) + Runner `verify-oracle`** | Monte no Excel/Sheets de 5 a 15 linhas com entradas e saídas esperadas. O `[modo-backend]` cria e executa o script `verify-oracle` no terminal até obter `PASS (0 divergências)` (proibido validar "de cabeça"). |
 | **Reprodução Instantânea de Bugs** | **Botão de Snapshot de Diagnóstico JSON** | Presente no `AppShell` do app: baixa o estado atual (`appState` + logs `[MÓDULO:FUNÇÃO]`) em JSON para anexar no chat quando ocorrer um erro. |
-| **Auditoria de Linhas, Imports e `catch` Vazio** | **Scanner [`.agents/skills/modo-auditor/scripts/scan-vibecode.ps1`](../.agents/skills/modo-auditor/scripts/scan-vibecode.ps1)** | Executado automaticamente pelo `[modo-auditor]` para detectar arquivos > 250 linhas, imports proibidos e `catch` vazios em 1 segundo. |
+| **Micro-Scan & Auditoria Determinística** | **Scanner [`.agents/skills/modo-auditor/scripts/scan-vibecode.ps1`](../.agents/skills/modo-auditor/scripts/scan-vibecode.ps1) (v2)** | Rodado a cada plug editado em `src/` (*Micro-Scan*) e pelo `[modo-auditor]`: detecta arquivos > 250 linhas, `catch`/`except` vazios, imports profundos (JS/TS/Py), impureza em `core/`, I/O direto na UI, quebra do *Contract Freeze* e desvios do DNA Visual. |
 
 ---
 

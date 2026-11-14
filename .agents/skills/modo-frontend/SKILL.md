@@ -47,6 +47,6 @@ Ao ser ativado:
 
 ---
 
-## 3. Protocolo de Encerramento de Turno
-- Verifique a contagem de linhas de todos os arquivos tocados (máx. absoluto **250 linhas**).
-- Exiba o **Radar Visual de Progresso Etapa a Etapa** (`✅` / `⏳` / `⬜`) e sobrescreva [`STATE.md`](../../../STATE.md).
+## 3. Protocolo de Encerramento de Turno (*Micro-Scan* & Verificação Real)
+- Consuma exclusivamente o envelope `Result<T>` das Fachadas (sem `fetch`/`localStorage` direto na página e sem `try/catch` espalhado) e rode o *Micro-Scan* (`powershell -ExecutionPolicy Bypass -File .agents/skills/modo-auditor/scripts/scan-vibecode.ps1`) + *typecheck/build*.
+- Exiba o **Radar Visual de Progresso Etapa a Etapa** (`✅` / `⏳` / `⬜`), declare o que foi verificado na prática e sobrescreva [`STATE.md`](../../../STATE.md) preservando a Memória Negativa.

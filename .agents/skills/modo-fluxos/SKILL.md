@@ -39,7 +39,7 @@ Para eliminar ambiguidades em fluxos complexos:
 
 ---
 
-## 4. Protocolo de Encerramento de Turno (Radar Visual & Fila da Fase B)
-- Confirme que todos os arquivos editados respeitam o limite de **250 linhas**.
+## 4. Protocolo de Encerramento de Turno (*Micro-Scan*, Radar Visual & Fila da Fase B)
+- Se editou código em `src/`, rode o *Micro-Scan* (`powershell -ExecutionPolicy Bypass -File .agents/skills/modo-auditor/scripts/scan-vibecode.ps1`) + *typecheck* e declare o resultado verificado.
 - Exiba na resposta o **Radar Visual de Progresso Etapa a Etapa** (`✅` / `⏳` / `⬜`) e, na Fase B, atualize o status do `Chat B.X de N` e informe qual é o próximo chat da fila.
-- Sincronize os fluxos em [`docs/02-ARQUITETURA-FLUXOS.md`](../../../docs/02-ARQUITETURA-FLUXOS.md) e **sobrescreva [`STATE.md`](../../../STATE.md)** com o estado e Radar atualizados.
+- Sincronize os fluxos em [`docs/02-ARQUITETURA-FLUXOS.md`](../../../docs/02-ARQUITETURA-FLUXOS.md) e **sobrescreva [`STATE.md`](../../../STATE.md)** mantendo o estado, a Memória Negativa e o Radar atualizados.

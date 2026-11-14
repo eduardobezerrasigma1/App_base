@@ -19,7 +19,8 @@ Antes de ler arquivos manualmente no olho, execute sempre o script determinísti
 ```powershell
 powershell -ExecutionPolicy Bypass -File .agents/skills/modo-auditor/scripts/scan-vibecode.ps1
 ```
-- O script apontará instantaneamente: arquivos acima de 180/250 linhas, blocos `catch` vazios, imports que furam as Fachadas (`index`) e cores hardcoded em `src/ui/pages/`.
+- O script v2 apontará instantaneamente: arquivos acima de 180/250 linhas, blocos `catch`/`except` vazios, imports profundos (JS/TS e Python), impureza em `src/core/`, I/O direto em `src/ui/pages/`, edições não autorizadas em `src/contracts/` após o *Contract Freeze* e violações do DNA Visual.
+- Se existir o runner da Planilha-Oráculo (`scripts/verify-oracle.*`), execute-o no terminal para comprovar matematicamente `0 divergências` (nunca valide contas apenas no olho).
 
 ---
 
@@ -58,3 +59,4 @@ Toda auditoria deve focar em **uma lente específica por vez** (ou nas lentes so
    - Atualize `STATE.md` apontando para `docs/audits/AUDIT-ATUAL.md` e indicando qual `[modo-especialista]` deve assumir.
    - Finalize sua resposta dizendo explicitamente ao usuário:
      > *"Dossiê de auditoria salvo em `docs/audits/AUDIT-ATUAL.md`. Execute agora o comando `/compact` para limpar o contexto de leitura e, em seguida, chame o `[modo-xxx]` para aplicar as correções."*
+   - Na homologação final da **Fase C (`C.3`)**, lembre o usuário de preencher a seção **Destilação de Aprendizado (`/learn`)** em [`docs/05-HOMOLOGACAO-BENCHMARK.md`](../../../docs/05-HOMOLOGACAO-BENCHMARK.md) para retroalimentar o `App_base`.

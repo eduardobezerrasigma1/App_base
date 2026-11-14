@@ -1,22 +1,26 @@
 <#
 .SYNOPSIS
-    Scanner Deterministico de Auditoria Vibecode & DNA Visual (Regra 02, Regra 05 e 12 Pilares UI/UX)
+    Scanner Deterministico de Auditoria Vibecode v2 (Regras 02/04/05, Pureza de Camadas e 12 Pilares UI/UX)
 .DESCRIPTION
-    Verifica automaticamente:
-    1. Arquivos em src/ que ultrapassam 180 linhas (Alerta) ou 250 linhas (Violacao Hard Cap).
-    2. Blocos catch vazios ou silenciosos.
-    3. Imports profundos entre modulos que violam o padrao de Fachada (index).
-    4. Violacoes do DNA Visual em src/ui/ (Fontes banidas com zero cortado, recriacao de <aside> fora do AppShell, cores hardcoded em pages/ e efeito de pulo translateY).
+    Verifica automaticamente (em < 1s, custo zero de tokens):
+    1. Limite de linhas em src/ e scripts/ (> 180 Alerta | > 250 Violacao Hard Cap).
+    2. Blocos catch (JS/TS) ou except/pass (Python) vazios/silenciosos.
+    3. Imports profundos fora de Fachada (index / facade) em JS/TS e Python.
+    4. Pureza do Cerebro (src/core/): proibido DOM, storage, rede ou FS direto.
+    5. Isolamento de I/O na UI (src/ui/pages/): proibido fetch/storage direto na view.
+    6. Guardiao de Contract Freeze: detecta edicoes em src/contracts/ quando 03-CONTRATOS-DADOS.md esta CONGELADO.
+    7. DNA Visual: fontes banidas, pulo translateY, <aside> fora do AppShell e Hex hardcoded em pages/.
 #>
 
 param(
     [string]$TargetDir = "src",
+    [string]$ContractsDoc = "docs/03-CONTRATOS-DADOS.md",
     [int]$WarnLines = 180,
     [int]$MaxLines = 250
 )
 
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host "   SCANNER DETERMINISTICO DE AUDITORIA - VIBECODE KIT     " -ForegroundColor Cyan
+Write-Host "  SCANNER DETERMINISTICO VIBECODE v2 - AUDITORIA & SHIFT-LEFT" -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 
 if (-not (Test-Path $TargetDir)) {
@@ -25,15 +29,18 @@ if (-not (Test-Path $TargetDir)) {
 }
 
 $codeExtensions = @("*.ts", "*.tsx", "*.js", "*.jsx", "*.py", "*.vue", "*.svelte", "*.css", "*.html")
-$files = Get-ChildItem -Path $TargetDir -Recurse -Include $codeExtensions -File |
-    Where-Object { $_.FullName -notmatch "node_modules|dist|build|\.git" }
+$scanRoots = @($TargetDir)
+if (Test-Path "scripts") { $scanRoots += "scripts" }
+
+$files = Get-ChildItem -Path $scanRoots -Recurse -Include $codeExtensions -File |
+    Where-Object { $_.FullName -notmatch "node_modules|dist|build|\.git|__pycache__" }
 
 $violations = 0
 $warnings = 0
 
-Write-Host "`n[1/5] Verificando Limite de Linhas (Alerta > $WarnLines | Max > $MaxLines)..." -ForegroundColor White
+Write-Host "`n[1/7] Verificando Limite de Linhas (Alerta > $WarnLines | Max > $MaxLines)..." -ForegroundColor White
 foreach ($f in $files) {
-    $lineCount = (Get-Content $f.FullName | Measure-Object -Line).Lines
+    $lineCount = @(Get-Content $f.FullName).Count
     $relPath = Resolve-Path -Path $f.FullName -Relative
     if ($lineCount -gt $MaxLines) {
         Write-Host "  [VIOLACAO CRITICA] $relPath -> $lineCount linhas (Maximo permitido: $MaxLines)" -ForegroundColor Red
@@ -44,23 +51,30 @@ foreach ($f in $files) {
     }
 }
 
-Write-Host "`n[2/5] Verificando Blocos 'catch' Vazios ou Silenciosos..." -ForegroundColor White
+Write-Host "`n[2/7] Verificando Blocos 'catch' / 'except' Vazios ou Silenciosos..." -ForegroundColor White
 foreach ($f in $files) {
     $content = Get-Content $f.FullName -Raw
-    if ($null -ne $content -and $content -match 'catch\s*(\([^)]*\))?\s*\{\s*(//.*)?\s*\}') {
-        $relPath = Resolve-Path -Path $f.FullName -Relative
+    if ($null -eq $content) { continue }
+    $relPath = Resolve-Path -Path $f.FullName -Relative
+    if ($content -match 'catch\s*(\([^)]*\))?\s*\{\s*(//.*)?\s*\}') {
         Write-Host "  [VIOLACAO CRITICA] $relPath -> Contem bloco catch vazio/silencioso!" -ForegroundColor Red
+        $violations++
+    }
+    if ($f.Extension -eq ".py" -and $content -match 'except\b[^:]*:\s*(\r?\n\s*(#.*)?)*\r?\n\s*pass\b') {
+        Write-Host "  [VIOLACAO CRITICA] $relPath -> Contem bloco except: pass silencioso!" -ForegroundColor Red
         $violations++
     }
 }
 
-Write-Host "`n[3/5] Verificando Imports Cruzados Fora de Fachada (index)..." -ForegroundColor White
+Write-Host "`n[3/7] Verificando Imports Cruzados Fora de Fachada (JS/TS e Python)..." -ForegroundColor White
 foreach ($f in $files) {
     $lines = Get-Content $f.FullName
     $lineNum = 0
     foreach ($line in $lines) {
         $lineNum++
-        if ($line -match "from\s+['""](\.\./)+[^/'""]+/[^/'""]+/[^'""]+['""]" -and $line -notmatch "/index['""]" -and $line -notmatch "design-system") {
+        $isJsDeep = ($line -match "from\s+['""](\.\./)+[^/'""]+/[^/'""]+/[^'""]+['""]" -and $line -notmatch "/index['""]" -and $line -notmatch "design-system")
+        $isPyDeep = ($f.Extension -eq ".py" -and $line -match "^\s*from\s+(src\.)?(core|data|ui)\.[a-zA-Z0-9_]+\.[a-zA-Z0-9_]+" -and $line -notmatch "\.(index|facade)\b" -and $line -notmatch "design_system")
+        if ($isJsDeep -or $isPyDeep) {
             $relPath = Resolve-Path -Path $f.FullName -Relative
             Write-Host "  [VIOLACAO DE FACHADA] ${relPath}:L${lineNum} -> Import profundo detectado: $($line.Trim())" -ForegroundColor Red
             $violations++
@@ -68,26 +82,25 @@ foreach ($f in $files) {
     }
 }
 
-Write-Host "`n[4/5] Verificando Fontes Banidas (Zero Cortado/Pontilhado) e Efeito Pulo (translateY)..." -ForegroundColor White
-foreach ($f in $files) {
-    $lines = Get-Content $f.FullName
-    $lineNum = 0
-    foreach ($line in $lines) {
-        $lineNum++
-        if ($line -match "JetBrains Mono|Fira Code|Space Mono|IBM Plex Mono") {
-            $relPath = Resolve-Path -Path $f.FullName -Relative
-            Write-Host "  [VIOLACAO DNA VISUAL] ${relPath}:L${lineNum} -> Fonte com zero cortado/pontilhado proibida (use F1..F4 tabular-nums): $($line.Trim())" -ForegroundColor Red
-            $violations++
-        }
-        if ($line -match "hover:.*-translate-y|transform:\s*translateY\(-") {
-            $relPath = Resolve-Path -Path $f.FullName -Relative
-            Write-Host "  [ALERTA DNA VISUAL]   ${relPath}:L${lineNum} -> Card pulando no hover (translateY proibido em M3): $($line.Trim())" -ForegroundColor Yellow
-            $warnings++
+Write-Host "`n[4/7] Verificando Pureza do Cerebro Puro (src/core/)..." -ForegroundColor White
+$coreDir = Join-Path $TargetDir "core"
+if (Test-Path $coreDir) {
+    $coreFiles = Get-ChildItem -Path $coreDir -Recurse -Include $codeExtensions -File
+    foreach ($cf in $coreFiles) {
+        $lines = Get-Content $cf.FullName
+        $lineNum = 0
+        foreach ($line in $lines) {
+            $lineNum++
+            if ($line -notmatch "^\s*(//|#)" -and ($line -match "\b(window|document|localStorage|sessionStorage|indexedDB|fetch|XMLHttpRequest)\b" -or $line -match "from\s+['""](fs|node:fs|axios)['""]" -or $line -match "^\s*(import|from)\s+(requests|httpx|tkinter|streamlit)\b")) {
+                $relPath = Resolve-Path -Path $cf.FullName -Relative
+                Write-Host "  [IMPUREZA NO CORE] ${relPath}:L${lineNum} -> Acesso proibido a UI/Rede/Storage em src/core/: $($line.Trim())" -ForegroundColor Red
+                $violations++
+            }
         }
     }
 }
 
-Write-Host "`n[5/5] Verificando Imutabilidade do AppShell e Cores Hardcoded em src/ui/pages/..." -ForegroundColor White
+Write-Host "`n[5/7] Verificando Isolamento de I/O na Casca Visual (src/ui/pages/)..." -ForegroundColor White
 $pagesDir = Join-Path $TargetDir "ui/pages"
 if (Test-Path $pagesDir) {
     $pageFiles = Get-ChildItem -Path $pagesDir -Recurse -Include $codeExtensions -File
@@ -96,9 +109,55 @@ if (Test-Path $pagesDir) {
         $lineNum = 0
         foreach ($line in $lines) {
             $lineNum++
+            if ($line -notmatch "^\s*(//|#)" -and ($line -match "\b(localStorage|sessionStorage|indexedDB|fetch)\s*[\.\(]" -or $line -match "\baxios\.")) {
+                $relPath = Resolve-Path -Path $pf.FullName -Relative
+                Write-Host "  [IO DIRETO NA UI]  ${relPath}:L${lineNum} -> Pagina acessando rede/storage direto (use Fachada src/data): $($line.Trim())" -ForegroundColor Red
+                $violations++
+            }
+        }
+    }
+}
+
+Write-Host "`n[6/7] Verificando Integridade do Contract Freeze (src/contracts/)..." -ForegroundColor White
+$contractsDir = Join-Path $TargetDir "contracts"
+if ((Test-Path $ContractsDoc) -and (Test-Path $contractsDir)) {
+    $docRaw = Get-Content $ContractsDoc -Raw
+    if ($docRaw -match "Status Atual:\*\*\s*`?([^`\r\n]*\bCONGELADO\b)" -and $Matches[1] -notmatch "ABERTO") {
+        $gitDiff = git status --porcelain -- $contractsDir 2>$null
+        if ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrWhiteSpace($gitDiff)) {
+            Write-Host "  [VIOLACAO CONTRACT FREEZE] Contratos CONGELADOS, mas src/contracts/ possui alteracoes pendentes!" -ForegroundColor Red
+            $violations++
+        }
+    }
+}
+
+Write-Host "`n[7/7] Verificando DNA Visual (Fontes, Pulo translateY, AppShell e Cores Hex)..." -ForegroundColor White
+foreach ($f in $files) {
+    $lines = Get-Content $f.FullName
+    $lineNum = 0
+    foreach ($line in $lines) {
+        $lineNum++
+        if ($line -match "JetBrains Mono|Fira Code|Space Mono|IBM Plex Mono") {
+            $relPath = Resolve-Path -Path $f.FullName -Relative
+            Write-Host "  [VIOLACAO DNA VISUAL] ${relPath}:L${lineNum} -> Fonte banida com zero cortado/pontilhado: $($line.Trim())" -ForegroundColor Red
+            $violations++
+        }
+        if ($line -match "hover:.*-translate-y|transform:\s*translateY\(-") {
+            $relPath = Resolve-Path -Path $f.FullName -Relative
+            Write-Host "  [ALERTA DNA VISUAL]   ${relPath}:L${lineNum} -> Card pulando no hover (translateY proibido): $($line.Trim())" -ForegroundColor Yellow
+            $warnings++
+        }
+    }
+}
+if (Test-Path $pagesDir) {
+    foreach ($pf in (Get-ChildItem -Path $pagesDir -Recurse -Include $codeExtensions -File)) {
+        $lines = Get-Content $pf.FullName
+        $lineNum = 0
+        foreach ($line in $lines) {
+            $lineNum++
             if ($line -match "<aside\b") {
                 $relPath = Resolve-Path -Path $pf.FullName -Relative
-                Write-Host "  [VIOLACAO APPSHELL] ${relPath}:L${lineNum} -> Tag <aside> dentro de pages/ (Sidebar pertence exclusivamente ao AppShell)!" -ForegroundColor Red
+                Write-Host "  [VIOLACAO APPSHELL] ${relPath}:L${lineNum} -> Tag <aside> em pages/ (exclusiva do AppShell)!" -ForegroundColor Red
                 $violations++
             }
             if ($line -match "#[0-9a-fA-F]{3,8}\b") {
@@ -111,7 +170,7 @@ if (Test-Path $pagesDir) {
 }
 
 Write-Host "`n==========================================================" -ForegroundColor Cyan
-Write-Host "RESUMO DO SCAN: $violations Violacoes Criticas | $warnings Alertas" -ForegroundColor Cyan
+Write-Host "RESUMO DO SCAN v2: $violations Violacoes Criticas | $warnings Alertas" -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 
 if ($violations -gt 0) { exit 1 } else { exit 0 }

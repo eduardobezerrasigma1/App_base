@@ -37,9 +37,12 @@ Sempre que iniciar **ou** concluir uma etapa de **Entrevista de Descoberta (Fase
    - Coordene ou preencha as bases de `docs/03-CONTRATOS-DADOS.md`, `docs/04-PADRAO-UIUX.md` e `docs/DESIGN.md`.
 4. **Proibição Absoluta:** Não crie nenhum arquivo de código do app na Fase 0.
 
-### B) Atuação no Início e Fim da FASE A (Regra 03 e Regra 04-A)
-1. **Entrevista Tática Pré-Código:** Mesmo com a Fase 0 pronta, faça uma breve entrevista sênior de implementação (oferecendo apoio visual via https://www.tldraw.com/ e https://app.diagrams.net/) para confirmar detalhes técnicos e subdividir a geração do MVP em etapas claras por persona (`[modo-dados]` $\rightarrow$ `[modo-fluxos]` $\rightarrow$ `[modo-uiux]` $\rightarrow$ `[modo-backend]` $\rightarrow$ `[modo-frontend]`).
-2. **Marco de Encerramento da Fase A (*Contract Freeze* + Travamento da Fila da Fase B):**
+### B) Atuação no Início e Fim da FASE A (Regra 03, Regra 04-A e Cadência *Spine-First*)
+1. **Entrevista Tática 360° + Gate de Autorização Explícita:** Mesmo com a Fase 0 pronta, conduza uma entrevista sênior rápida (oferecendo apoio visual via https://www.tldraw.com/ e https://app.diagrams.net/) cobrindo todas as áreas (Dados, Core, Fluxos e UI). **Pare e aguarde o *"de acordo"* explícito do usuário antes de escrever a primeira linha de código.**
+2. **Orquestração por *Step-Budget* (Espinha Mestre $\rightarrow$ 1 Plug por Turno):**
+   - **Turno 1 de Código:** Levante apenas a **Espinha Mestre compilável** (`src/contracts/` com `Result<T>`, Fachadas com *stubs* simples e `AppShell` navegável).
+   - **Turnos Seguintes:** Coordene a entrega de **1 plug simples de baixa densidade por turno** (`[modo-dados]` $\rightarrow$ `[modo-fluxos]` $\rightarrow$ `[modo-uiux]` $\rightarrow$ `[modo-backend]` + `verify-oracle` $\rightarrow$ `[modo-frontend]`), rodando `scan-vibecode.ps1` ao fechar cada etapa.
+3. **Marco de Encerramento da Fase A (*Contract Freeze* + Travamento da Fila da Fase B):**
    - Ao final do *Walking Skeleton* da Fase A, verifique se todos os módulos conversam apenas por Fachadas (`index`) e se o **Botão de Snapshot de Diagnóstico JSON** está operacional.
    - Altere o status de [`docs/03-CONTRATOS-DADOS.md`](../../../docs/03-CONTRATOS-DADOS.md) para `🔒 CONGELADO (CONTRACT FREEZE)`.
    - **Abertura e Clareza da Fase B:** Trave na Seção 7 de `docs/02-ARQUITETURA-FLUXOS.md` e em `STATE.md` o **Plano Oficial de Chats da Fase B**, deixando 100% explícito:
@@ -56,4 +59,4 @@ Sempre que iniciar **ou** concluir uma etapa de **Entrevista de Descoberta (Fase
 ## 4. Protocolo de Encerramento de Turno (Radar Visual Obrigatório)
 - Sempre apresente na resposta ao usuário o **Radar Visual de Progresso Etapa a Etapa** (`✅ Concluído`, `⏳ ATUAL`, `⬜ Pendente`).
 - Atualize `docs/02-ARQUITETURA-FLUXOS.md` se houve mudança na árvore de pastas, *Stack Lock* ou Plano de Chats da Fase B.
-- **Sobrescreva [`STATE.md`](../../../STATE.md)** mantendo o Radar Visual atualizado, a fila de chats da Fase B e o próximo modo/passo exato.
+- **Sobrescreva [`STATE.md`](../../../STATE.md)** mantendo o Radar Visual atualizado, as decisões descartadas (**Memória Negativa** pós-`/compact`), a fila de chats da Fase B e o próximo modo/passo exato.

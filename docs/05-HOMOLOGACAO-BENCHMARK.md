@@ -8,11 +8,11 @@ Este documento define a régua objetiva para homologar o aplicativo construído 
 
 - [ ] **1. Limite de Tamanho (Regra 02):** 100% dos arquivos de código possuem $\le 250$ linhas?
 - [ ] **2. Isolamento de Módulos (Regra 02):** Nenhum módulo importa arquivos internos de outro módulo fora das Fachadas (`index`)?
-- [ ] **3. Pureza de Domínio:** A lógica de negócio/cálculo funciona de forma independente da interface visual?
-- [ ] **4. Teste com *Golden Dataset*:** Os resultados para os casos normais e de borda batem 100% com o esperado em `03-CONTRATOS-DADOS.md`?
+- [ ] **3. Pureza de Domínio & Envelope `Result<T>`:** `src/core/` é 100% livre de DOM/rede/storage e todas as Fachadas retornam `Result<T>` padronizado?
+- [ ] **4. Prova Executável do Oráculo:** O runner `scripts/verify-oracle.*` executou no terminal contra `docs/golden-oracle.csv` com `0 divergências`?
 - [ ] **5. Coerência de UI/UX:** Todas as páginas usam os mesmos tokens visuais e possuem os 4 estados (*Default, Empty, Loading, Error*)?
 - [ ] **6. I/O Não-Destrutivo e Persistência:** Arquivos de entrada permanecem intocados e o estado local possui `schemaVersion`?
-- [ ] **7. Zero Auditorias Pendentes:** Todos os dossiês gerados pelo `[modo-auditor]` foram corrigidos e validados?
+- [ ] **7. Scanner v2 & Auditorias Zeradas:** `scan-vibecode.ps1` reporta `0 violações` e todos os dossiês de `docs/audits/AUDIT-ATUAL.md` foram sanados?
 
 ---
 
@@ -28,3 +28,15 @@ Este documento define a régua objetiva para homologar o aplicativo construído 
 | **4. Coerência Visual e UX entre Telas** *(Padronização, ergonomia, estados de erro/vazio)* | 20% | `Nota 0-10` | `Nota 0-10` | `{{PREENCHER}}` |
 | **5. Resiliência a Bugs e Diagnóstico** *(Comportamento diante de arquivos/entradas inválidas)* | 20% | `Nota 0-10` | `Nota 0-10` | `{{PREENCHER}}` |
 | **MÉDIA PONDERADA FINAL** | **100%** | **`--`** | **`--`** | **`{{Conclusão Geral}}`** |
+
+---
+
+## 3. Destilação de Aprendizado para o Kit Base (Retroalimentação `/learn`)
+
+Ao encerrar a Fase C deste aplicativo, registre até **3 aprendizados práticos** (erros evitados, padrões úteis de domínio ou ajustes de fluxo) que mereçam ser levados de volta para evoluir o template **`App_base`** usando o comando `/learn`:
+
+| # | Ocorrência / Padrão Descoberto Neste App | Regra ou Melhoria Sugerida para o `App_base` | Promovido via `/learn`? |
+| :---: | :--- | :--- | :---: |
+| **1** | `{{PREENCHER_NA_FASE_C}}` | `{{PREENCHER_NA_FASE_C}}` | `[ ]` |
+| **2** | `{{PREENCHER_NA_FASE_C}}` | `{{PREENCHER_NA_FASE_C}}` | `[ ]` |
+| **3** | `{{PREENCHER_NA_FASE_C}}` | `{{PREENCHER_NA_FASE_C}}` | `[ ]` |

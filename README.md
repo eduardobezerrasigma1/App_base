@@ -1,6 +1,6 @@
-# App_base — Kit Base de Vibecoding Estruturado (v1.6)
+# App_base — Kit Base de Vibecoding Estruturado (v1.7)
 
-Template oficial para criação assistida de aplicativos modulares com IA (**Criador Assistido Geral de Apps**), projetado para manter **zero perda de contexto**, arquivos enxutos (`< 250 linhas`), desacoplamento estrito por Fachadas e DNA Visual Sênior.
+Template oficial para criação assistida de aplicativos modulares com IA (**Criador Assistido Geral de Apps**), projetado para manter **zero perda de contexto**, arquivos enxutos (`< 250 linhas`), postura cognitiva disciplinada (*Espinha Mestre + Plugs Simples*), desacoplamento estrito por Fachadas e DNA Visual Sênior.
 
 ---
 
@@ -19,9 +19,9 @@ Ativar [modo-arquiteto]. Vamos iniciar a Fase 0 (Regra 01 - Zero Código) para u
 
 ```text
 📁 App_base/
-├── AGENTS.md                        # Constituição: 5 Regras Pétreas + Blindagens Operacionais
-├── STATE.md                         # Passagem de Bastão & Radar Visual de Progresso
-├── 📁 .agents/skills/               # 7 Personas Especialistas ([modo-xx]) + Scanner Determinístico
+├── AGENTS.md                        # Constituição: 5 Regras Pétreas + 7 Posturas Cognitivas + Blindagens
+├── STATE.md                         # Passagem de Bastão, Memória Negativa & Radar Visual (<= 50 linhas)
+├── 📁 .agents/skills/               # 7 Personas Especialistas ([modo-xx]) + Scanner Determinístico v2
 │   ├── modo-arquiteto/              # Descoberta (Fase 0), Stack Lock, Skills extras e Contract Freeze
 │   ├── modo-dados/                  # Contratos, Persistência (schemaVersion), Oráculo CSV e Snapshot JSON
 │   ├── modo-fluxos/                 # Jornadas, Máquinas de Estado e Prevenção de Erros

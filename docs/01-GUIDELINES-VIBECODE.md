@@ -37,25 +37,32 @@ Todo código deve pertencer claramente a uma (e apenas uma) destas 3 camadas:
 
 ---
 
-## 3. Congelamento de Contratos (*Contract Freeze*: Fase A $\rightarrow$ Fase B)
+## 3. Cadência *Spine-First* & Congelamento de Contratos (*Contract Freeze*)
 
-1. Na **Fase A (Chat Único)**, o objetivo é levantar o *Walking Skeleton* funcional de ponta a ponta e validar as assinaturas de dados e fachadas.
-2. Ao encerrar a Fase A, decreta-se o **`CONTRACT FREEZE`** em `docs/03-CONTRATOS-DADOS.md`.
-3. Na **Fase B (Chats Isolados)**, cada especialista pode reescrever 100% da implementação interna do seu módulo, mas **é proibido alterar nomes de funções públicas, parâmetros ou formato de retorno dos contratos congelados** sem antes acionar o `[modo-arquiteto]` para atualizar a documentação central.
+1. **Gate 360° & *Step-Budget* (Espinha Mestre $\rightarrow$ 1 Plug por Turno):**
+   - Nenhum código é escrito antes de fechar o entendimento de Dados, Core, Fluxos e UI com aval explícito do usuário.
+   - **Turno 1 de Código:** Criar apenas a **Espinha Mestre compilável** (`contracts/`, Fachadas retornando *stubs* simples e `AppShell` navegável).
+   - **Turnos Seguintes:** Acoplar **1 plug simples de baixa densidade por turno**, rodando `scan-vibecode.ps1` + *typecheck* ao final de cada etapa (*Micro-Scan Shift-Left*) para manter o app sempre executável.
+2. **Congelamento (*Contract Freeze*: Fase A $\rightarrow$ Fase B):**
+   - Ao encerrar a Fase A, decreta-se `🔒 CONGELADO (CONTRACT FREEZE)` em `docs/03-CONTRATOS-DADOS.md`.
+   - Na **Fase B (Chats Isolados)**, cada especialista pode reescrever 100% da implementação interna do seu módulo, mas **é proibido alterar assinaturas, parâmetros ou formato de retorno em `src/contracts/`** sem autorização formal do `[modo-arquiteto]` (monitorado automaticamente pelo `scan-vibecode.ps1`).
 
 ---
 
-## 4. Erros Auto-Diagnosticáveis (Observabilidade para IA)
+## 4. Envelope `Result<T>` & Erros Auto-Diagnosticáveis (Observabilidade para IA)
 
-Para que qualquer bug seja resolvido em segundos ao colar a mensagem no chat:
-- **Proibido `catch` Vazio ou Silencioso:** Nenhum erro pode ser ignorado sem tratamento explícito.
-- **Formato Padrão de Mensagem Técnica:**
+Para eliminar `try/catch` defensivo espalhado nas telas e permitir diagnóstico instantâneo:
+- **Proibido `catch` Vazio ou `throw` Solto entre Camadas:** Funções públicas falíveis das Fachadas (`data/`, `core/`, serviços) nunca lançam exceções cruas para a UI; elas retornam sempre o contrato universal `Result<T>`:
+  ```text
+  Result<T> = { ok: true, data: T } | { ok: false, error: { tag, code, userMessage, context? } }
+  ```
+- **Formato Padrão da `tag` Técnica:**
   ```text
   [NOME_DO_MODULO:NOME_DA_FUNCAO] Descrição clara da falha | Contexto: { dadosRelevantes }
   ```
 - **Feedback Duplo:** Erros de operação devem:
-  1. Registrar o erro técnico estruturado no console/log para diagnóstico da IA.
-  2. Exibir uma mensagem humana amigável e acionável na UI (conforme `docs/04-PADRAO-UIUX.md`).
+  1. Registrar o erro técnico estruturado no console/log (`recentLogs` do Snapshot JSON) para diagnóstico da IA.
+  2. Exibir `userMessage` em *toast* efêmero *bottom-up* na UI (conforme `docs/04-PADRAO-UIUX.md`).
 
 ---
 

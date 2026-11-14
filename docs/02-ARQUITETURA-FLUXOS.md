@@ -41,18 +41,20 @@ Além dos 7 modos base do Kit, este aplicativo utiliza os seguintes especialista
 
 ```text
 📁 src/ (Estrutura Padrão do Kit Base)
-├── 📁 contracts/                # [Imutável após Fase A] Tipos, interfaces e schemas globais
+├── 📁 contracts/                # [Imutável após Fase A] Tipos, Result<T>, AppError e schemas globais
 │   └── index.*                  # Fachada pública de contratos
-├── 📁 core/                     # [Cérebro Puro] Regras de negócio e cálculos (validados contra docs/golden-oracle.csv)
+├── 📁 core/                     # [Cérebro Puro] Regras de negócio puras (zero DOM/rede/storage)
 │   └── 📁 {{modulo_1}}/
-│       └── index.*              # Fachada pública do módulo
+│       └── index.*              # Fachada pública do módulo (retorna Result<T>)
 ├── 📁 data/                     # [I/O & Persistência] Coleta, storage (com schemaVersion), exportação e Snapshot
 │   ├── 📁 mocks/                # Golden Dataset (casos normais e de borda)
 │   ├── snapshot.*               # Rotina padrão de Exportar/Importar Snapshot de Diagnóstico JSON
-│   └── index.*                  # Fachada pública de dados
-└── 📁 ui/                       # [Casca Visual]
+│   └── index.*                  # Fachada pública de dados (retorna Result<T>)
+└── 📁 ui/                       # [Casca Visual] Zero I/O direto (consome apenas Fachadas)
     ├── 📁 design-system/        # Componentes-base extraídos do Template Mestre do Stitch (inclui Botão de Snapshot no AppShell)
     └── 📁 pages/                # Telas modulares (<250 linhas) derivadas de docs/ui-templates/
+📁 scripts/
+└── verify-oracle.*              # Runner executável que confronta src/core/ contra docs/golden-oracle.csv
 ```
 
 ---

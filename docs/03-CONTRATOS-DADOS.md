@@ -31,9 +31,22 @@
 
 ---
 
-## 4. Entidades e Contratos Principais (Schemas Core + Snapshot de Diagnóstico)
+## 4. Entidades e Contratos Principais (`Result<T>`, Snapshot e Schemas Core)
 
-### 4.1 Contrato Padrão do Snapshot de Diagnóstico (`DiagnosticSnapshot`)
+### 4.1 Contrato Universal de Retorno das Fachadas (`Result<T>` & `AppError`)
+Toda função pública falível exposta pelas Fachadas (`src/data`, `src/core` e serviços) deve retornar este envelope padronizado (proibido `throw` solto para a camada de UI):
+```text
+AppError {
+  tag: string          // Ex: "[DADOS:IMPORTAR]"
+  code: string         // Ex: "INVALID_COLUMN_SCHEMA"
+  userMessage: string  // Mensagem clara e acionável para o toast na UI
+  context?: unknown    // Metadados úteis para reprodução/debug
+}
+
+Result<T> = { ok: true, data: T } | { ok: false, error: AppError }
+```
+
+### 4.2 Contrato Padrão do Snapshot de Diagnóstico (`DiagnosticSnapshot`)
 Todo aplicativo do Kit deve suportar a exportação e importação deste envelope JSON para reprodução instantânea de erros pela IA:
 ```text
 DiagnosticSnapshot {
@@ -50,7 +63,7 @@ DiagnosticSnapshot {
 }
 ```
 
-### 4.2 Entidades do Domínio do App
+### 4.3 Entidades do Domínio do App
 ```text
 // {{PREENCHER_NA_FASE_0: Definir aqui as estruturas exatas de dados (Interfaces/Schemas) que trafegam entre os módulos}}
 
@@ -66,10 +79,10 @@ EntidadeExemplo {
 
 | Módulo (`src/...`) | Função Pública na Fachada | Parâmetros de Entrada (Input) | Retorno Garantido (Output) | Erros Possíveis (`[MÓDULO:FUNÇÃO]`) |
 | :--- | :--- | :--- | :--- | :--- |
-| `src/data` | `exportDiagnosticSnapshot()` | `void` | `DiagnosticSnapshot` | `[DADOS:EXPORT_SNAPSHOT] Falha ao serializar` |
-| `src/data` | `importDiagnosticSnapshot(raw)` | `string (JSON)` | `Result<AppState, AppError>` | `[DADOS:IMPORT_SNAPSHOT] Schema incompatível` |
-| `{{modulo_dados}}` | `{{importarDados(...)}}` | `{{...}}` | `{{Result<T, AppError>}}` | `{{[DADOS:IMPORTAR] Formato inválido}}` |
-| `{{modulo_core}}` | `{{processar(...)}}` | `{{...}}` | `{{...}}` | `{{[CORE:PROCESSAR] ...}}` |
+| `src/data` | `exportDiagnosticSnapshot()` | `void` | `Result<DiagnosticSnapshot>` | `[DADOS:EXPORT_SNAPSHOT] Falha ao serializar` |
+| `src/data` | `importDiagnosticSnapshot(raw)` | `string (JSON)` | `Result<AppState>` | `[DADOS:IMPORT_SNAPSHOT] Schema incompatível` |
+| `{{modulo_dados}}` | `{{importarDados(...)}}` | `{{...}}` | `{{Result<T>}}` | `{{[DADOS:IMPORTAR] Formato inválido}}` |
+| `{{modulo_core}}` | `{{processar(...)}}` | `{{...}}` | `{{Result<T>}}` | `{{[CORE:PROCESSAR] ...}}` |
 
 ---
 
@@ -81,12 +94,12 @@ EntidadeExemplo {
 
 ---
 
-## 7. Regra da Planilha-Oráculo (`docs/golden-oracle.csv`) e *Golden Dataset*
+## 7. Regra da Planilha-Oráculo (`docs/golden-oracle.csv`), Runner Executável & *Golden Dataset*
 
 Para eliminar erros de interpretação matemática pela IA:
-1. **Planilha-Oráculo (`docs/golden-oracle.csv`):**
+1. **Planilha-Oráculo (`docs/golden-oracle.csv`) + Runner Executável (`scripts/verify-oracle.*`):**
    - Contém de **5 a 15 linhas** geradas/conferidas pelo usuário no Excel/Sheets com as **colunas de entrada** e as **colunas de resultado exato esperado**.
-   - **Regra Inviolável:** O `[modo-backend]` e o `[modo-auditor]` devem confrontar a saída das funções de `src/core/` com `docs/golden-oracle.csv`. Nenhuma regra de cálculo é aprovada se houver divergência de centavos ou arredondamento em relação à Planilha-Oráculo.
+   - **Proibido Validar "De Cabeça":** O `[modo-backend]` deve criar e executar no terminal o script `scripts/verify-oracle.*` que lê `docs/golden-oracle.csv`, invoca `src/core/` e imprime `PASS (0 divergências)` ou `FAIL (linha X: esperado Y, obtido Z)`. Nenhuma regra de cálculo é aprovada sem execução real comprovada.
 2. **Casos de Borda no *Golden Dataset* (`src/data/mocks/`):**
    - Valores zerados e negativos;
    - Campos opcionais vazios / `null`;

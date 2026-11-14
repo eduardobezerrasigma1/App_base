@@ -25,7 +25,7 @@ Antes de propor ou alterar qualquer contrato ou código:
 2. **Estruturar a Planilha-Oráculo (`docs/golden-oracle.csv`):**
    - Definir (ou solicitar ao usuário que preencha no Excel/Sheets) um arquivo `docs/golden-oracle.csv` contendo entradas canônicas e os resultados matemáticos exatos calculados na planilha.
    - Esta Planilha-Oráculo é a **verdade absoluta** contra a qual o `[modo-backend]` validará os cálculos.
-3. **Implementar a Camada de Contratos (`src/contracts/`):** Criar os tipos, interfaces e validadores em runtime (ex.: Zod/Pydantic, máx. 250 linhas por arquivo).
+3. **Implementar a Camada de Contratos (`src/contracts/`):** Criar os tipos, o envelope universal `Result<T>` / `AppError` (proibindo `throw` cru para a UI) e validadores em runtime (ex.: Zod/Pydantic, máx. 250 linhas por arquivo).
 4. **Criar o *Golden Dataset* (`src/data/mocks/`) e Rotina de Snapshot de Diagnóstico:**
    - Criar dados de teste com "Caso Feliz" + "Casos de Borda".
    - Implementar as funções `exportDiagnosticSnapshot()` e `importDiagnosticSnapshot(json)` na Fachada de Dados (permitindo salvar e restaurar `{ schemaVersion, timestamp, appState, lastLogs }` em 1 clique para depuração instantânea pela IA).
@@ -38,6 +38,6 @@ Antes de propor ou alterar qualquer contrato ou código:
 ---
 
 ## 3. Protocolo de Encerramento de Turno (Radar Visual & Fila da Fase B)
-- Verifique se nenhum arquivo criado/editado ultrapassou **250 linhas**.
+- Execute o *Micro-Scan* (`powershell -ExecutionPolicy Bypass -File .agents/skills/modo-auditor/scripts/scan-vibecode.ps1`) + *typecheck* caso tenha editado `src/`, declarando o que foi verificado na prática (e mantenha a Memória Negativa em `STATE.md`).
 - Exiba na resposta o **Radar Visual de Progresso Etapa a Etapa** (`✅` / `⏳` / `⬜`). Se estiver na Fase B (`Chat B.1 de N`), marque `B.1` como `✅ Concluído` em [`docs/02-ARQUITETURA-FLUXOS.md`](../../../docs/02-ARQUITETURA-FLUXOS.md) e indique o comando exato do próximo chat (`Chat B.2 de N`).
 - Atualize [`docs/03-CONTRATOS-DADOS.md`](../../../docs/03-CONTRATOS-DADOS.md) (se na Fase 0/A) e **sobrescreva [`STATE.md`](../../../STATE.md)** com o Radar atualizado.

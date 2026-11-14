@@ -27,16 +27,16 @@ Ao ser ativado:
 3. **Zero Acoplamento com UI:** Nenhum arquivo em `core/` pode importar componentes visuais ou manipular estado de tela.
 
 ### Na Fase B (Refinamento Profundo em Chat Isolado):
-1. **Reconciliação Obrigatória com a Planilha-Oráculo (`docs/golden-oracle.csv`):**
-   - Teste as funções puras do módulo contra os casos de `docs/golden-oracle.csv`.
-   - **Meta:** Diferença matemática **zero** entre o cálculo do código e o cálculo da planilha do usuário.
+1. **Prova Executável com a Planilha-Oráculo (`docs/golden-oracle.csv` + `scripts/verify-oracle.*`):**
+   - **Proibido validar cálculos "de cabeça" no texto.** Crie/atualize e execute no terminal o runner `scripts/verify-oracle.*` confrontando `src/core/` contra `docs/golden-oracle.csv`.
+   - **Meta:** Saída real `PASS (0 divergências)` entre o código e a planilha do usuário.
 2. **Blindagem Matemática e de Regras de Borda:** Tratar divisão por zero, arredondamentos precisos, listas vazias, limites extremos e regras complexas do domínio.
-3. **Erros Auto-Diagnosticáveis:** Garantir que toda exceção ou retorno de falha siga o formato `[MODULO:FUNCAO] Mensagem | Contexto`.
+3. **Envelope `Result<T>` & Erros Auto-Diagnosticáveis:** Garantir que toda falha retorne `{ ok: false, error }` com `tag` `[MODULO:FUNCAO] Mensagem | Contexto` (zero `throw` solto para a UI).
 4. **Respeito Estrito ao *Contract Freeze*:** Reescrever e otimizar a lógica interna sem alterar a assinatura pública da Fachada congelada na Fase A.
 
 ---
 
-## 3. Protocolo de Encerramento de Turno (Radar Visual & Fila da Fase B)
-- Confirme que nenhum arquivo ultrapassa **250 linhas**.
+## 3. Protocolo de Encerramento de Turno (*Micro-Scan*, Radar Visual & Fila da Fase B)
+- Execute o *Micro-Scan* (`powershell -ExecutionPolicy Bypass -File .agents/skills/modo-auditor/scripts/scan-vibecode.ps1`), o *typecheck* e o runner `verify-oracle`, declarando na resposta o que foi verificado na prática.
 - Exiba na resposta o **Radar Visual de Progresso Etapa a Etapa** (`✅` / `⏳` / `⬜`). Se estiver na Fase B (`Chat B.X de N`), marque a etapa como `✅ Concluído` e indique o comando pronto do próximo chat da fila.
-- Se adicionou submódulos internos, atualize a árvore em [`docs/02-ARQUITETURA-FLUXOS.md`](../../../docs/02-ARQUITETURA-FLUXOS.md) e **sobrescreva [`STATE.md`](../../../STATE.md)**.
+- Se adicionou submódulos internos, atualize a árvore em [`docs/02-ARQUITETURA-FLUXOS.md`](../../../docs/02-ARQUITETURA-FLUXOS.md) e **sobrescreva [`STATE.md`](../../../STATE.md)** (preservando a Memória Negativa).
