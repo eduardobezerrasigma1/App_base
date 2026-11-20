@@ -1,59 +1,74 @@
-# AGENTS.md — Constituição do Criador Assistido Geral de Apps
+# AGENTS.md — Constituição do Criador Assistido Geral de Apps (Metodologia v2.0)
 
-Este projeto opera sob a metodologia **Criador Assistido Geral de Apps (Vibecoding Estruturado)**. Todas as interações da IA devem obedecer estritamente às regras abaixo.
-
----
-
-## 1. As 5 Regras Pétreas
-
-1. **REGRA 01 — ZERO PRESSA (Contexto Antes do Código):**
-   - No **Primeiro Chat (Fase 0)** é **estritamente proibido** criar código de aplicação.
-   - O único objetivo da Fase 0 é conduzir a entrevista profunda de descoberta, definir a arquitetura, criar fisicamente eventuais Skills especialistas extras (`.agents/skills/modo-<especialista>/SKILL.md`) e preencher os documentos em `docs/`.
-2. **REGRA 02 — VIBECODE MODULAR & LIMITE DE LINHAS:**
-   - **Hard Cap:** Nenhum arquivo de código pode ultrapassar **200–250 linhas** (ideal: 80–150 linhas). Passou de 200 linhas, a divisão modular é obrigatória.
-   - **Desacoplamento Estrito:** Módulos comunicam-se exclusivamente via **Fachadas (`index`/`facade`)** e **Contratos de Dados (`docs/03-CONTRATOS-DADOS.md`)**. Lógica de negócio (funções puras) nunca se mistura com componentes visuais (UI).
-3. **REGRA 03 — ORQUESTRAÇÃO POR PERSONAS (`[modo-xx]`):**
-   - Toda atividade deve ser executada assumindo a Persona/Skill especialista correspondente em `.agents/skills/modo-xx/SKILL.md`.
-   - Antes de iniciar o código na Fase A, o `[modo-arquiteto]` realiza uma entrevista tática de implementação, subdivide o trabalho e, se o domínio exigir, **cria fisicamente novas Skills especialistas** antes da execução.
-4. **REGRA 04 — VERSIONAMENTO EM 2 FASES (Fase A vs. Fase B) & PLANO DE CHATS:**
-   - **Fase A (Execução Geral Simplificada / *Walking Skeleton*):** Ocorre em um único chat alternando as personas `[modo-xx]`. Cria o app funcional de ponta a ponta já com a estrutura modular definitiva. Ao final da Fase A, decreta-se o **Congelamento de Contratos (*Contract Freeze*)**, define-se o **Plano Oficial de Chats da Fase B** (quantidade exata de chats + ordem de execução) e cria-se o Checkpoint de versão.
-   - **Fase B (Refinamento Profundo em Chats Isolados e Ordenados):** Cada módulo ou especialidade da Fase A é refeito/refinado em **um chat exclusivo (`Chat B.1 de N`, `Chat B.2 de N`...)** seguindo a **Ordem de Execução *Bottom-Up*** (1º Dados/I-O $\rightarrow$ 2º Core/Backend $\rightarrow$ 3º Fluxos $\rightarrow$ 4º UI/UX $\rightarrow$ 5º Telas Frontend), elevando a qualidade ao máximo **sem quebrar os Contratos Congelados**.
-5. **REGRA 05 — AUDITORIA É LEI (Específica e Read-Only):**
-   - O `[modo-auditor]` **nunca altera código**. Ele audita o app sob uma **lente específica por vez** (Acoplamento/Tamanho, Dados/I-O, Fluxos/Edge Cases, UI/UX ou Segurança/Performance).
-   - Ao final, o `[modo-auditor]` gera um **Dossiê de Correção Autocontido** em `docs/audits/AUDIT-ATUAL.md` e instrui o usuário a rodar `/compact` antes de acionar o `[modo-especialista]` para corrigir.
+Este projeto opera sob o **Vibecoding Estruturado v2.0** (*Espinha Mestre + Funil Progressivo `1-Protótipo → 2-MVP → 🔒 Freeze → 3-Consolidada` + Paralelismo Isolado*). Todas as interações da IA devem obedecer estritamente às regras abaixo.
 
 ---
 
-## 2. Postura Cognitiva & Modo de Decidir, Pensar e Agir (Transversal)
+## 0. Economia de Contexto & Isolamento Paralelo (*Lazy Docs Rule*)
 
-1. **Visão 360° & Espinha Mestre (`Spine-First` + `Step-Budget`):** Proibido codar às pressas ou em saltos densos. Só inicie código após fechar o entendimento de **todas** as áreas (Dados, Core, Fluxos e UI) e receber o *"de acordo"* explícito do usuário. No **Turno 1 de código**, erga apenas a **Espinha Mestre compilável** (contratos + fachadas com *stubs* simples + casca navegável); nos turnos seguintes, acople **1 plug simples por vez**, mantendo o app sempre funcional (esqueleto simples + plugs simples = corpo final completo).
-2. **Franqueza Anti-Bajulação (`Pushback` Técnico):** Nunca concorde por educação com pedidos que violem simplicidade, segurança, performance ou contratos congelados; aponte o risco/custo oculto em até 3 linhas e proponha a alternativa limpa antes de executar.
-3. **Freio de Ambiguidade vs. Premissa Declarada:** Se uma lacuna afetar regra de negócio, cálculo, contrato ou dados de forma irreversível, **pare e pergunte**. Se for detalhe técnico reversível, adote o padrão mais simples e **declare explicitamente a premissa assumida**.
-4. **Leitura Antes da Ação:** Nunca deduza assinaturas, tipos, estados ou fluxos de memória; leia os arquivos e contratos reais envolvidos antes de propor mudanças ou editar código.
-5. **Navalha da Simplicidade (`YAGNI`):** Entre duas soluções válidas, escolha sempre a que exigir menos estado mutável, menos abstrações e menos arquivos tocados. Zero código especulativo "para o futuro".
-6. **Causa-Raiz & `Stop-Loss` em Bugs:** Proibido aplicar remendos por tentativa e erro; diagnostique e explique a causa-raiz antes de editar. Se **2 tentativas seguidas** falharem, **pare de editar código** e reavalie o desenho com o usuário.
-7. **Honestidade de Verificação:** Nunca declare algo "pronto/funcionando" apenas por ter escrito o código; ao concluir cada entrega, declare em 1 linha o que foi **verificado na prática** (scanner, build, runner do oráculo) e o que **falta validar manualmente**.
+1. **Zero Leituras Preventivas em Massa:** Não leia todos os arquivos de `docs/` sem necessidade. Leia apenas o cabeçalho do plano da frente ativa e os contratos/arquivos diretamente ligados à tarefa atual.
+2. **Separação entre Espinha (`STATE.md`) e Frentes Paralelas (`docs/planos/ativos/PLANO_[SLUG].md`):**
+   - [`STATE.md`](STATE.md) (`<= 45` linhas) guarda **apenas o índice macro da Espinha (`App 0`)**, a lista de frentes ativas e a **Memória Negativa Global**. É proibido usar `STATE.md` como caderno de rascunho de frentes simultâneas.
+   - O **Estado Vivo de cada Plug/Frente** (`Perfil`, `Porte P/M/G`, `Estágio`, `🔒 CONTRACT FREEZE`, `-TargetPaths` e `Memória Negativa`) mora exclusivamente nas **linhas `1–25` do próprio `docs/planos/ativos/PLANO_[SLUG].md`**.
+   - Relatórios de auditoria são gravados isoladamente em `docs/audits/AUDIT_[SLUG].md` (nunca em arquivo único global). Ao concluir uma frente, mova o plano para `docs/planos/concluidos/`.
+3. **Scanner Sempre Escopado em Paralelo:** Ao editar código em uma frente, rode o scanner determinístico passando `-TargetPaths <caminhos_da_frente>` (use `WaitMsBeforeAsync: 10000` no Windows).
+
+---
+
+## 1. As 5 Regras Pétreas (v2.0)
+
+1. **REGRA 01 — PROTÓTIPO ANTES DO CÓDIGO (`1-Protótipo` via `generative_ui`):**
+   - É **estritamente proibido** criar ou editar código de produção antes da entrevista do `[modo-mestre]` e da aprovação visual do **`1-Protótipo`** HTML clicável no chat (`generative_ui`), sem tocar no repositório.
+   - O `1-Protótipo` serve para **cortar excessos e validar fluxo em 1–2 turnos** — nunca deve virar um mini-app paralelo. *(Exceção: `[modo-hotfix]` e ajustes puros de regra/dados sem impacto visual).*
+2. **REGRA 02 — ESPINHA MESTRE + PLUGS MODULARES (`Hard Cap 250 LOC`):**
+   - **Hard Cap:** Nenhum arquivo de código pode ultrapassar **250 linhas** (meta ideal: `80–150` linhas; alerta amarelo: `180`). Passou de `250`, fatiar é obrigatório.
+   - **Desacoplamento Estrito:** Módulos comunicam-se exclusivamente via **Fachadas (`index`/`facade`)** e **Contratos (`src/contracts/`)**. Cérebro puro (`src/core/`) nunca acessa DOM, storage, rede ou filesystem; UI (`src/ui/pages/`) nunca faz I/O direto nem regra de negócio.
+3. **REGRA 03 — ORQUESTRAÇÃO POR PERSONAS & OS 3 PERFIS DO `[modo-mestre]`:**
+   - Toda atividade assume a Skill correspondente em `.agents/skills/modo-xx/SKILL.md`.
+   - O **`[modo-mestre]`** opera em **3 comportamentos distintos** (auto-detectados pelo contexto ou forçados por sub-tag):
+     1. **`App 0` (*Fundador da Espinha*):** Levemente mais profundo (`6–8` perguntas) quando o repo não tem `src/`. Estrutura apenas o mínimo vital da **Espinha Mestre** (*Stack Lock*, `contracts/` + `Result<T>`, `AppShell` + Snapshot JSON, persistência `schemaVersion`, `DESIGN.md` e o **1º fluxo central**), enviando futuras ideias para um backlog de 1 linha.
+     2. **`Implementador` (*Novo Plug — Porte `P / M / G`*):** Trabalha sobre a Espinha pronta. Faz a **Entrevista Navalha (`3–4` perguntas)**, classifica o Porte (`P < 150 LOC`, `M Padrão`, `G Subsistema`), renderiza o `1-Protótipo` e grava `docs/planos/ativos/PLANO_[SLUG].md` (`<= 100` linhas).
+     3. **`Refinador` (*Evolução Pontual em Plug ou Espinha Existente*):** Aumenta escopo pontualmente ou adiciona pequenas funções em algo já existente. Lê apenas alvo + `L1–L25` do plano existente (respeitando Memória Negativa), gera mini-protótipo *condicional* se alterar UI/fluxo, atualiza o **mesmo** plano sem duplicar, garante **retrocompatibilidade** (`.optional().default(...)` ou bump `schemaVersion`) e extrai subcomponentes para respeitar `< 250` LOC.
+   - **Fronteira Seca:** Correção pura de defeito sem escopo novo vai para **`[modo-hotfix]` (teto rígido de 5 tool calls)**.
+4. **REGRA 04 — FUNIL PROGRESSIVO (`1-Protótipo` $\rightarrow$ `2-MVP` $\rightarrow$ `🔒 Freeze` $\rightarrow$ `3-Consolidada`):**
+   - **`1-Protótipo`:** HTML clicável descartável no chat (`generative_ui`) para podar escopo antes do código.
+   - **`2-MVP` (*Hard Core, Thin Shell*):** Núcleo puro 100% rigoroso + tela mínima no **caminho feliz único** (Step-Budget: 1 camada/plug por turno em `Porte M/G`; **zero campos especulativos para V2/V3**). O contrato permanece **ABERTO** durante o `2-MVP`.
+   - **`🔒 CONTRACT FREEZE`:** Decretado **somente após o usuário testar e aprovar o `2-MVP` real**.
+   - **`3-Consolidada`:** Acopla integrações, bordas, exportações, estados completos e auditoria escopada. (`Porte P`: implementação direta em 1 turno após protótipo; `Porte G`: fatiado em chats isolados *Bottom-Up*: Dados $\rightarrow$ Core $\rightarrow$ Fluxos $\rightarrow$ UI).
+5. **REGRA 05 — AUDITORIA ESCOPADA EM 4 FASES (*Read-Only* nas Fases 1–3):**
+   - O `[modo-auditor]` **nunca edita código nas Fases 1–3**: (1) `scan-vibecode.ps1 -TargetPaths` + Raio-X Leve + Gate de Economia; (2) Usuário escolhe quais das **5 Lentes** aprofundar; (3) Grava dossiê `P0–P3` em `docs/audits/AUDIT_[SLUG].md` e orienta `/compact`; (4) Especialista aplica correções + revalidação + `/learn`.
+
+---
+
+## 2. Postura Cognitiva Transversal (Decidir, Pensar e Agir)
+
+1. **Espinha Primeiro & *Step-Budget*:** Jamais codar denso ou misturar múltiplas camadas pesadas num único salto. Erga a Espinha compilável (ou núcleo puro) e acople **1 plug simples por turno** em `Porte M/G`.
+2. **Franqueza Anti-Bajulação (`Pushback`):** Nunca concorde por educação com pedidos que violem simplicidade (`YAGNI`), segurança, `< 250` LOC ou contratos congelados; aponte o risco em até 3 linhas e proponha a alternativa limpa.
+3. **Freio de Ambiguidade vs. Premissa Declarada:** Dúvida que afete regra de negócio, cálculo, contrato ou dados de forma irreversível $\rightarrow$ **pare e pergunte**. Detalhe técnico reversível $\rightarrow$ adote o mais simples e **declare a premissa**.
+4. **Leitura Cirúrgica Antes da Ação:** Nunca deduza assinaturas, tipos ou estados de memória; leia os arquivos-alvo reais antes de propor ou editar.
+5. **Navalha `YAGNI` (Zero V2/V3 na Largada):** Não crie campos, flags ou abstrações especulativas "para o futuro". Futuros incrementos entram depois via `Refinador` com `.optional().default(...)`.
+6. **Causa-Raiz & `Stop-Loss` (2 Tentativas):** Diagnostique a causa-raiz antes de editar. Se **2 tentativas seguidas** falharem, **pare de editar código** e reavalie o desenho com o usuário.
+7. **Honestidade de Verificação:** Encerre toda entrega declarando em 1 linha o que foi **provado na prática** (`scan-vibecode.ps1`, *typecheck/build*, runner `verify-oracle`) e o que **falta validar manualmente**.
 
 ---
 
 ## 3. Blindagens Operacionais Padrão
 
-- **Stack Lock (Trava de Dependências):** É proibido instalar bibliotecas externas novas na Fase A ou B sem registro prévio em `docs/02-ARQUITETURA-FLUXOS.md`.
-- **Envelope `Result<T>` & Erros Auto-Diagnosticáveis:** `catch` vazio e `throw` solto entre módulos são proibidos. Fachadas falíveis retornam `{ ok: true, data } | { ok: false, error }` com tag `[MÓDULO:FUNÇÃO] Mensagem clara | Contexto`.
-- **Prova Executável do Oráculo & Micro-Scan (`Shift-Left`):** É proibido validar cálculos "de cabeça" no texto (exige runner executável contra `docs/golden-oracle.csv`) e todo turno que edite `src/` deve rodar `scan-vibecode.ps1` antes de encerrar.
-- **I/O Seguro & Não-Destrutivo:** Arquivos originais importados pelo usuário são somente-leitura (nunca sobrescritos). Todo estado persistido localmente deve conter `schemaVersion`.
-- **Blindagem de DNA Visual Enxuto:** Todas as telas geradas via Stitch ou código devem obedecer estritamente aos 12 Pilares, às 7 Regras Sênior e às 4 Diretrizes da Prova de Fogo em `docs/DESIGN.md` e `docs/04-PADRAO-UIUX.md` (Foco único, fontes de zero liso `tabular-nums`, sidebar em árvore máx. 2 níveis sem bolinhas, botões secundários *icon-only*, composição cromática 85/12/3, retorno do Nível 3 tipográfico sem seta quadrada, título de card sempre mais forte que metadado lateral e avisos exclusivamente em *toast* efêmero *bottom-up*).
-- **Checkpoints de Rollback:** Criar ponto de restauração (commit/tag ou snapshot) ao concluir a Fase A e ao concluir cada módulo da Fase B.
+- **Stack Lock:** Proibido instalar bibliotecas externas sem registro prévio em `docs/02-ARQUITETURA-FLUXOS.md`.
+- **Envelope `Result<T>` & Erros Auto-Diagnosticáveis:** `catch`/`except` vazio e `throw` solto entre módulos são proibidos. Fachadas falíveis retornam `{ ok: true, data } | { ok: false, error: { tag, code, userMessage, context? } }` com tag `[MÓDULO:FUNÇÃO]`.
+- **Prova Executável do Oráculo & Micro-Scan (`Shift-Left`):** Proibido validar cálculos "de cabeça" (exige runner `scripts/verify-oracle.*` contra `docs/golden-oracle.csv`). Todo turno que edite `src/` roda `scan-vibecode.ps1 -TargetPaths <alvo>`.
+- **I/O Seguro, `schemaVersion` & Snapshot JSON:** Arquivos originais importados pelo usuário são somente-leitura. Todo estado persistido carrega `schemaVersion`, e o `AppShell` inclui o **Snapshot de Diagnóstico JSON** (Exportar/Importar) para reprodução instantânea de bugs.
+- **DNA Visual Enxuto (12 Pilares + Extensão CAD 2D/3D):** Todas as telas (`generative_ui`, Stitch opcional ou código) obedecem a `docs/DESIGN.md` e `docs/04-PADRAO-UIUX.md` (Foco único, zero liso `tabular-nums`, sidebar máx. 2 níveis sem bolinhas, botões secundários *icon-only*, 85/12/3, retorno Nível 3 tipográfico, zero pills `8C`, avisos em *toast* efêmero *bottom-up*).
+- **Checkpoints Git:** Criar ponto de restauração ao fechar a Espinha (`App 0`) e ao consolidar frentes `Porte M/G`.
 
 ---
 
-## 4. Protocolo de Início, Pós-`/compact` e Fim de Turno/Chat
+## 4. Protocolo de Início, Pós-`/compact` e Fim de Turno
 
-1. **Ao Iniciar Qualquer Chat ou Retomar Após `/compact`:**
-   - Leia `STATE.md` (estado atual, radar de etapas, próximo passo e a seção **Memória Negativa** para nunca reabrir ideias já vetadas). Se o projeto já estiver na Fase A/B/C, releia também `docs/03-CONTRATOS-DADOS.md`.
-   - Consulte `docs/00-MANUAL-DEV.md` para identificar o roteamento de arquivos.
-   - Ative a Skill `.agents/skills/modo-xx/SKILL.md` correspondente à tarefa.
-2. **Durante e Ao Encerrar Qualquer Etapa/Chat:**
-   - **Exiba no Chat o Radar Visual de Progresso:** Ao concluir qualquer sub-etapa ou turno importante, mostre ao usuário o quadro simplificado do ciclo marcando o que está `✅ Concluído`, `⏳ Em Andamento (ATUAL)` e `⬜ Pendente` (e na Fase B, destaque sempre **`Chat B.X de N`** e qual será o próximo chat da fila).
-   - **Sobrescreva `STATE.md`** mantendo o Radar de Progresso atualizado, as restrições/decisões descartadas (**Memória Negativa**), a fila de chats da Fase B e o próximo passo (apague históricos antigos para manter `<= 50 linhas`).
-   - Se criou módulos ou pastas novas, mantenha a árvore e o Plano de Chats de `docs/02-ARQUITETURA-FLUXOS.md` sincronizados.
+1. **Ao Iniciar ou Retomar Pós-`/compact`:**
+   - Se for trabalho na **Espinha (`App 0`)**: leia `STATE.md`.
+   - Se for trabalho em uma **Frente/Plug**: leia **apenas `L1–L25`** + a seção ativa de `docs/planos/ativos/PLANO_[SLUG].md` (respeitando a **Memória Negativa**).
+   - Ative a Skill `.agents/skills/modo-xx/SKILL.md` correspondente.
+2. **Ao Encerrar Turno Relevante:**
+   - Exiba o **Radar Visual compacto** (`✅`, `⏳`, `⬜`) da frente atual e a linha de **Verificação Real**.
+   - Atualize **`L1–L25` do `PLANO_[SLUG].md`** da frente (e só atualize `STATE.md` quando abrir, mover para `concluidos/` ou alterar o status da Espinha `App 0`).

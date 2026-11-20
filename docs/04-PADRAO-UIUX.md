@@ -1,37 +1,36 @@
-# 04-PADRAO-UIUX.md — DNA Visual Oficial, Fluxo StitchMCP e Coerência de Telas
+# 04-PADRAO-UIUX.md — DNA Visual Oficial, Prototipação (`generative_ui` / `StitchMCP`) e Coerência de Telas
 
 > *Responsável por este documento:* **`[modo-uiux]`**.
-> **REGRA PÉTREA:** Todas as páginas e telas do aplicativo (seja na Fase A ou na Fase B) devem obedecer estritamente aos **12 Pilares do DNA Visual** documentados aqui e em [`docs/DESIGN.md`](./DESIGN.md), partindo sempre do **Template Mestre consolidado via StitchMCP**.
+> **REGRA PÉTREA:** Todas as telas (`1-Protótipo` em `generative_ui`, `2-MVP`, `3-Consolidada` ou explorações opcionais no `StitchMCP`) devem obedecer estritamente aos **12 Pilares do DNA Visual** documentados aqui e em [`docs/DESIGN.md`](./DESIGN.md).
 
 ---
 
-## 1. Identificadores Oficiais do Projeto no Stitch (`StitchMCP`)
+## 1. Configurações Visuais do App & Identificadores Opcionais do Stitch
 
-> *Preenchido e mantido automaticamente pelo `[modo-uiux]` ao sincronizar com o servidor MCP do Stitch:*
+> *Escolhas preenchidas no `App 0` (`[modo-mestre]` / `[modo-uiux]`):*
 
-- **Stitch Project ID (`projectId`):** `{{PREENCHER_NA_FASE_0_OU_A}}`
-- **Stitch Design System Asset ID (`designSystem`):** `{{PREENCHER: ex. assets/...}}`
-- **Template Mestre Screen ID (`masterScreenId`):** `{{PREENCHER}}`
-- **Combo de Fonte Escolhido (`F1`–`F4`):** `{{PREENCHER_NA_FASE_0: Padrão F1 (Plus Jakarta Sans)}}`
-- **Paleta Escolhida (`C2` ou `C3`) & Superfície (`S1`/`S2` + `T1`–`T5`):** `{{PREENCHER_NA_FASE_0}}`
+- **Combo de Fonte Escolhido (`F1`–`F4`):** `{{PREENCHER_NO_APP_0: Padrão F1 (Plus Jakarta Sans)}}`
+- **Paleta Escolhida (`C2`–`C7`) & Superfície (`S1`/`S2` + `T1`–`T5`):** `{{PREENCHER_NO_APP_0}}`
 - **Arquivo Fonte do Design System:** [`docs/DESIGN.md`](./DESIGN.md)
-- **Pasta de Gabaritos Consolidados (HTML/Screenshots do Stitch):** `docs/ui-templates/`
+- **Motor Padrão de `1-Protótipo` (Rápido / Clicável):** **`generative_ui`** (1 turno no chat, zero código no repo)
+- **StitchMCP *(Opcional Sob Demanda no `App 0`)*:**
+  - `projectId`: `{{OPCIONAL}}` · `designSystem`: `{{OPCIONAL}}` · `masterScreenId`: `{{OPCIONAL}}` · Gabaritos: `docs/ui-templates/`
 
 ---
 
-## 2. O Ciclo Oficial de Criação de Templates (`Antigravity` $\leftrightarrow$ `StitchMCP`)
+## 2. Fluxo Oficial de Prototipação & Extração do Design System
 
 ```mermaid
 flowchart LR
-    A["1. Antigravity ([modo-uiux])\nConfigura docs/DESIGN.md\n(Combo F1..F4 + Paleta C2/C3)"] --> B["2. StitchMCP\nupload_design_md +\ncreate_design_system"]
-    B --> C["3. StitchMCP\ngenerate_screen_from_text\n(+ Bloco Anti-Bloat Obrigatório)"]
-    C --> D["4. Revisão no Stitch\nAjustes visuais pelo usuário\nou via edit_screens"]
-    D --> E["5. Consolidação via MCP\ndownload_file -> docs/ui-templates/\n+ Extração Modular (<250 linhas)"]
+    A["1. App 0 / Implementador\nConfigura docs/DESIGN.md\n(F1..F4 + C2..C7 + 85/12/3)"] --> B["2. 1-Protótipo Clicável\ngenerative_ui em 1 turno\n(Corta excessos antes do código)"]
+    B -.->|"Opcional (Exploração Estética)"| S["StitchMCP\ngenerate_screen + download_file\n-> docs/ui-templates/"]
+    B --> E["3. Extração Modular\nsrc/ui/design-system/ (<250 LOC)\n+ Telas Enxutas no 2-MVP"]
+    S -.-> E
 ```
 
 ### Regras de Ouro na Consolidação (Imutabilidade do `AppShell` e Limite de Linhas):
-1. **Imutabilidade do `<AppShell>`:** O `AppShell` (Sidebar em Árvore + Topo limpo) é extraído **uma única vez** para `src/ui/design-system/AppShell`. **É estritamente proibido** que páginas em `src/ui/pages/` recriem tags `<aside>` ou sidebars próprias — elas preenchem apenas o slot central (`children`).
-2. **Injeção Obrigatória do Bloco Anti-Bloat no Stitch:** Toda chamada ao `StitchMCP:generate_screen_from_text` deve anexar o bloco `STRICT ANTI-BLOAT CONSTRAINTS` da Seção 6 de [`docs/DESIGN.md`](./DESIGN.md).
+1. **Imutabilidade do `<AppShell>`:** O `AppShell` (Sidebar em Árvore + Topo limpo + Botão Snapshot JSON) é extraído **uma única vez** para `src/ui/design-system/AppShell`. **É estritamente proibido** que páginas em `src/ui/pages/` recriem tags `<aside>` ou sidebars próprias — elas preenchem apenas o slot central (`children`).
+2. **Injeção Obrigatória do Bloco Anti-Bloat:** Tanto em `generative_ui` quanto em chamadas opcionais ao `StitchMCP`, aplique integralmente o bloco `STRICT ANTI-BLOAT CONSTRAINTS` da Seção 6 de [`docs/DESIGN.md`](./DESIGN.md).
 
 ---
 

@@ -1,114 +1,97 @@
-# 00-MANUAL-DEV.md — Instrutor Mestre & Roteador do Projeto
+# 00-MANUAL-DEV.md — Manual Rápido, Personas & Prompts Prontos (v2.0)
 
-Bem-vindo ao **Manual do Desenvolvedor e Instrutor da IA**. Este documento é o **Hub Central** do projeto: ele explica de forma básica como o aplicativo funciona, como operar os modos especialistas (`[modo-xx]`), as ferramentas de apoio humano/determinístico e quais arquivos ler antes de cada atividade.
-
----
-
-## 1. Como o Aplicativo Funciona (Visão Geral Básica)
-
-> *Nota do Kit Base: Esta seção é preenchida pelo `[modo-arquiteto]` ao final da entrevista da Fase 0 (Regra 01).*
-
-- **Nome do App:** `{{PREENCHER_NA_FASE_0: Nome do Aplicativo}}`
-- **Objetivo Principal:** `{{PREENCHER_NA_FASE_0: Qual dor resolve em 1 parágrafo}}`
-- **Fluxo Básico (Entrada $\rightarrow$ Processamento $\rightarrow$ Saída):**
-  1. **Coleta/Entrada:** `{{PREENCHER_NA_FASE_0: De onde vêm os dados}}`
-  2. **Processamento/Regras:** `{{PREENCHER_NA_FASE_0: O que o coração do app calcula ou transforma}}`
-  3. **Visualização/Exportação:** `{{PREENCHER_NA_FASE_0: Como o usuário vê e para onde exporta os resultados}}`
+Bem-vindo ao **Hub Central da Metodologia v2.0** (*Espinha Mestre + Funil `1-Protótipo → 2-MVP → 🔒 Freeze → 3-Consolidada` + Frentes Paralelas*).
 
 ---
 
-## 2. Ciclo de Vida de Construção & Radar Visual Etapa a Etapa
+## 1. Visão Geral do Aplicativo *(Preenchido pelo `[modo-mestre]` no `App 0`)*
+
+- **Nome do App:** `{{PREENCHER_NO_APP_0: Nome do Aplicativo}}`
+- **Dor Central:** `{{PREENCHER_NO_APP_0: O que o app resolve em 1 parágrafo curto}}`
+- **Fluxo Vital do 1º `2-MVP` (Entrada $\rightarrow$ Processamento $\rightarrow$ Saída):**
+  1. **Entrada:** `{{PREENCHER_NO_APP_0}}`
+  2. **Núcleo / Regras:** `{{PREENCHER_NO_APP_0}}`
+  3. **Saída / Visualização:** `{{PREENCHER_NO_APP_0}}`
+
+---
+
+## 2. O Ciclo Progressivo v2.0 & Os 3 Perfis do `[modo-mestre]`
 
 ```mermaid
 flowchart LR
-    F0["⏳ FASE 0: Planejamento\n(Chat 01 - Zero Código)"] --> FA["⬜ FASE A: Execução Simplificada\n(Chat 02 - Walking Skeleton + Freeze)"]
-    FA --> FB["⬜ FASE B: Refinamento Profundo\n(Chats B.1 a B.N - Ordem Bottom-Up)"]
-    FB --> FC["⬜ FASE C: Auditoria & Benchmark\n([modo-auditor] -> /compact -> Fix)"]
+    M["[modo-mestre]\n1. App 0 (Espinha)\n2. Implementador (P/M/G)\n3. Refinador (Incremento)"] --> P1["1-Protótipo\nHTML Clicável (generative_ui)\nZero código · Corta excessos"]
+    P1 --> PL["Plano Isolado <= 100 LOC\ndocs/planos/ativos/PLANO_[SLUG].md\n(Estado Vivo L1-L25)"]
+    PL --> P2["2-MVP\nHard Core, Thin Shell\nCaminho Feliz · Contrato ABERTO"]
+    P2 --> CF["🔒 CONTRACT FREEZE\n(Após validar 2-MVP real)"]
+    CF --> P3["3-Consolidada\nPlugs, Bordas, Exportação\n+ Auditoria Escopada"]
 ```
 
-### 2.1 Checklist Etapa a Etapa do Ciclo (Espelhado em `STATE.md`)
-Em todas as fases, a IA atualiza e exibe o progresso usando os marcadores `✅ Concluído`, `⏳ ATUAL` e `⬜ Pendente`:
-
-- **FASE 0 — Descoberta & Arquitetura (Chat 01 — Regra 01: Zero Código)**
-  - `[ ] 0.1` Entrevista de Descoberta (`[modo-arquiteto]` + apoio tldraw/diagrams.net)
-  - `[ ] 0.2` Criação física das Skills Especialistas extras em `.agents/skills/` (Regra 03)
-  - `[ ] 0.3` Preenchimento de `docs/00` a `04`, `DESIGN.md` e estimativa preliminar de Chats da Fase B
-- **FASE A — *Walking Skeleton* por *Step-Budget* & *Contract Freeze* (Chat 02 — Chat Único)**
-  - `[ ] A.1` Entrevista Tática 360° Pré-Código + **Aval Explícito do Usuário antes de codar** (`[modo-arquiteto]`)
-  - `[ ] A.2` **Turno 1 de Código — Espinha Mestre Compilável:** `contracts/` (`Result<T>`), Fachadas com *stubs* simples e `AppShell` navegável
-  - `[ ] A.3` **Plugs Simples (1 por Turno + Micro-Scan):** Dados/Mocks/Snapshot (`[modo-dados]`) $\rightarrow$ Guardas de Fluxo (`[modo-fluxos]`) $\rightarrow$ Template Mestre Stitch (`[modo-uiux]`) $\rightarrow$ Core + Runner `verify-oracle` (`[modo-backend]`) $\rightarrow$ Telas Iniciais (`[modo-frontend]`)
-  - `[ ] A.4` **Marco Final da Fase A:** `scan-vibecode.ps1` limpo + Decreto de `🔒 CONTRACT FREEZE` + **Fila Ordenada de Chats da Fase B (`B.1 a B.N`)** + Checkpoint Git
-- **FASE B — Refinamento Sênior em Chats Isolados (`Chats B.1 até B.N`)**
-  - *A quantidade exata de chats (`N`) e a ordem de execução são travadas no encerramento da Fase A e listadas em `STATE.md` e `02-ARQUITETURA-FLUXOS.md` (cada chat roda Micro-Scan ao concluir).*
-- **FASE C — Auditoria Determinística, Homologação & Retroalimentação (Regra 05)**
-  - `[ ] C.1` Execução do `scan-vibecode.ps1` v2 + Auditoria por Lente (`[modo-auditor]`) $\rightarrow$ `docs/audits/AUDIT-ATUAL.md`
-  - `[ ] C.2` Ciclo `/compact` (relendo `STATE.md` + Memória Negativa) $\rightarrow$ Correção cirúrgica pelo `[modo-especialista]`
-  - `[ ] C.3` Homologação final, Benchmark e Destilação de Aprendizado (`/learn`) em `docs/05-HOMOLOGACAO-BENCHMARK.md`
-
-### 2.2 Regra de Abertura, Quantidade e Ordem de Execução na Fase B
-Para que você saiba exatamente **quantos chats abrir** e **em qual sequência**, a Fase B segue a **Ordem *Bottom-Up* (da Fundação para a Casca Visual)**:
-
-| Ordem Padrão | Especialidade / Escopo do Chat Isolado | Modo Ativo | Por que nesta ordem? (Dependência) |
-| :---: | :--- | :--- | :--- |
-| **1º (`Chat B.1`)** | **Camada de Dados, I/O & Persistência** (`src/data/`) | `[modo-dados]` | Garante que importação, parsers, storage e Snapshot JSON estejam blindados primeiro. |
-| **2º (`Chat B.2..k`)** | **Módulos de Domínio / Cérebro Puro** (1 chat por módulo de `src/core/` ou skill extra) | `[modo-backend]` ou `[modo-extra]` | Reconcilia 100% dos cálculos com a Planilha-Oráculo (`golden-oracle.csv`) antes de ligar na tela. |
-| **3º (`Chat B.k+1`)** | **Orquestração de Fluxos & State Machines** | `[modo-fluxos]` | Conecta Dados + Core com travas contra cliques duplos e recuperação de erro. |
-| **4º (`Chat B.k+2`)** | **Design System & Novos Templates Stitch** (`docs/ui-templates/`) | `[modo-uiux]` | *(Paralelizável com 1º–3º, mas obrigatório antes do Frontend)* Garante todos os gabaritos prontos. |
-| **5º (`Chat B.N`)** | **Refinamento de Páginas / Telas** (1 chat por página ou área em `src/ui/pages/`) | `[modo-frontend]` | Consome o Design System e as Fachadas já testadas, aplicando os 4 estados obrigatórios. |
+### Classificação por Porte (`P / M / G`) no Perfil `Implementador`
+- **`Porte P` (`< 150` LOC — micro-ferramenta ou ajuste enxuto):** `Entrevista curta` $\rightarrow$ `1-Protótipo` (se visual) $\rightarrow$ **implementação direta em 1 turno** + `scan-vibecode.ps1 -TargetPaths`.
+- **`Porte M` (Padrão — nova ferramenta/módulo):** `1-Protótipo` $\rightarrow$ `PLANO_[SLUG].md` $\rightarrow$ `2-MVP` (*Step-Budget* 1 camada/turno) $\rightarrow$ `🔒 Freeze` $\rightarrow$ `3-Consolidada`.
+- **`Porte G` (Subsistema complexo):** Mesmo funil, fatiado em **chats isolados *Bottom-Up*** (`[modo-dados]` $\rightarrow$ `[modo-backend]` $\rightarrow$ `[modo-fluxos]` $\rightarrow$ `[modo-frontend]`).
 
 ---
 
-## 3. Ferramentas de Apoio Humano & Determinístico (Onde a IA Precisa de Precisão Extra)
+## 3. Catálogo de Personas (`[modo-xx]`)
 
-| Etapa / Necessidade | Ferramenta Oficial Integrada ao Kit | Como Utilizar |
+| Comando | Skill | Quando Usar | Limite Rígido |
+| :--- | :--- | :--- | :--- |
+| **`[modo-mestre]`** | [`.agents/skills/modo-mestre/SKILL.md`](../.agents/skills/modo-mestre/SKILL.md) | **3 Perfis auto-detectados:** `App 0` (fundar Espinha), `Implementador` (novo plug `P/M/G`) e `Refinador` (evolução pontual em plug/espinha existente). | **Zero código** antes do `1-Protótipo` aprovado; zero campos especulativos de V2/V3. |
+| **`[modo-prototipo]`** | [`.agents/skills/modo-prototipo/SKILL.md`](../.agents/skills/modo-prototipo/SKILL.md) | Testar ideia visual solta ou comparar 2 layouts clicáveis em 1 turno (`generative_ui`), sem abrir plano. | **Zero edição** no repositório (`src/`, `docs/`). |
+| **`[modo-hotfix]`** | [`.agents/skills/modo-hotfix/SKILL.md`](../.agents/skills/modo-hotfix/SKILL.md) | Bugfix puro, typo, cor ou fórmula errada **sem escopo novo**. | **Teto rígido de 5 tool calls**; sem mudança de contrato. |
+| **`[modo-dados]`** | [`.agents/skills/modo-dados/SKILL.md`](../.agents/skills/modo-dados/SKILL.md) | `src/contracts/` (`Result<T>`), I/O Read-Only, `schemaVersion`, `golden-oracle.csv` e Snapshot JSON. | Respeita `🔒 Freeze` (`.optional().default(...)`). |
+| **`[modo-backend]`** | [`.agents/skills/modo-backend/SKILL.md`](../.agents/skills/modo-backend/SKILL.md) | Cérebro Puro (`src/core/`, `< 250` LOC) + runner executável `scripts/verify-oracle.*`. | Zero DOM, rede, storage ou validação "de cabeça". |
+| **`[modo-fluxos]`** | [`.agents/skills/modo-fluxos/SKILL.md`](../.agents/skills/modo-fluxos/SKILL.md) | Máquinas de estado, travas de duplo clique e recuperação de falhas. | Zero regra visual; `< 250` LOC. |
+| **`[modo-uiux]`** | [`.agents/skills/modo-uiux/SKILL.md`](../.agents/skills/modo-uiux/SKILL.md) | `docs/DESIGN.md`, ergonomia `generative_ui`, `src/ui/design-system/` e `StitchMCP` opcional. | Obediência estrita aos 12 Pilares + CAD 2D/3D sob demanda. |
+| **`[modo-frontend]`** | [`.agents/skills/modo-frontend/SKILL.md`](../.agents/skills/modo-frontend/SKILL.md) | Telas modulares (`src/ui/pages/`, `< 250` LOC) fiéis ao `1-Protótipo` aprovado via Fachadas. | Zero `<aside>` fora do `AppShell`, zero I/O ou cálculo na view. |
+| **`[modo-auditor]`** | [`.agents/skills/modo-auditor/SKILL.md`](../.agents/skills/modo-auditor/SKILL.md) | Auditoria escopada em 4 Fases (`scan-vibecode.ps1 -TargetPaths`) $\rightarrow$ `docs/audits/AUDIT_[SLUG].md`. | **100% Read-Only** nas Fases 1–3; obriga Gate de Economia. |
+
+### Especialistas Extras Criados para Este App *(se houver)*
+- `{{OPCIONAL_NO_APP_0: ex. [modo-motor-financeiro] -> .agents/skills/modo-motor-financeiro/SKILL.md}}`
+
+---
+
+## 4. Ferramentas de Apoio Determinístico
+
+| Necessidade | Ferramenta Oficial | Uso |
 | :--- | :--- | :--- |
-| **Desenho e Correção de Fluxos / Entrevista** | **https://www.tldraw.com/** e **https://app.diagrams.net/** | No **início ou fim** das etapas de Entrevista (`[modo-arquiteto]`) e Fluxos (`[modo-fluxos]`), desenhe esboços ou rabisque correções visuais e cole o print no chat. |
-| **Prototipação e Coerência de Telas (UI/UX)** | **`docs/DESIGN.md` $\leftrightarrow$ `StitchMCP`** | O `[modo-uiux]` envia o `DESIGN.md` ao Stitch, você ajusta lá, e o MCP baixa o gabarito consolidado para `docs/ui-templates/`. |
-| **Validação Matemática 100% Exata** | **Planilha-Oráculo (`docs/golden-oracle.csv`) + Runner `verify-oracle`** | Monte no Excel/Sheets de 5 a 15 linhas com entradas e saídas esperadas. O `[modo-backend]` cria e executa o script `verify-oracle` no terminal até obter `PASS (0 divergências)` (proibido validar "de cabeça"). |
-| **Reprodução Instantânea de Bugs** | **Botão de Snapshot de Diagnóstico JSON** | Presente no `AppShell` do app: baixa o estado atual (`appState` + logs `[MÓDULO:FUNÇÃO]`) em JSON para anexar no chat quando ocorrer um erro. |
-| **Micro-Scan & Auditoria Determinística** | **Scanner [`.agents/skills/modo-auditor/scripts/scan-vibecode.ps1`](../.agents/skills/modo-auditor/scripts/scan-vibecode.ps1) (v2)** | Rodado a cada plug editado em `src/` (*Micro-Scan*) e pelo `[modo-auditor]`: detecta arquivos > 250 linhas, `catch`/`except` vazios, imports profundos (JS/TS/Py), impureza em `core/`, I/O direto na UI, quebra do *Contract Freeze* e desvios do DNA Visual. |
+| **Prototipação Imediata** | **`generative_ui` + `docs/DESIGN.md`** | Padrão do `1-Protótipo` (clicável em 1 turno no chat). *StitchMCP é opcional sob demanda no `App 0`.* |
+| **Esboço de Fluxos** | **https://www.tldraw.com/** · **https://app.diagrams.net/** | Opcional para rabiscar fluxos complexos e colar print no chat. |
+| **Prova Matemática Exata** | **`docs/golden-oracle.csv` + `scripts/verify-oracle.*`** | Confronto automático no terminal (`0 divergências`) — proibido conferir contas no olho. |
+| **Reprodução de Bugs** | **Botão Snapshot de Diagnóstico JSON** (`AppShell`) | Baixa/restaura `{ schemaVersion, appState, recentLogs }` em 1 clique. |
+| **Micro-Scan Paralelo** | **[`scan-vibecode.ps1`](../.agents/skills/modo-auditor/scripts/scan-vibecode.ps1) (v3)** | Sempre com `-TargetPaths <frente>` e `-PlanFile <plano>`: checa `250` LOC, `catch` vazio, Fachadas, pureza, Freeze e DNA Visual. |
 
 ---
 
-## 4. Manual de Skills e Personas (`[modo-xx]`)
+## 5. Prompts Prontos (Copiar e Colar)
 
-Para ativar uma persona, digite o comando **`[modo-nome]`** no chat:
+### 1) Fundar Novo App (`[modo-mestre]` $\rightarrow$ Perfil `App 0`)
+```text
+Ativar [modo-mestre]. Quero iniciar o App 0 para criar "[NOME DO APP]". A dor central é [descreva em 2 linhas]. Conduza a entrevista de espinha e gere o 1-Protótipo clicável antes de qualquer código.
+```
 
-### 4.1 Modos Base do Kit
-| Comando | Skill Vinculada | Quando Utilizar |
-| :--- | :--- | :--- |
-| **`[modo-arquiteto]`** | [`.agents/skills/modo-arquiteto/SKILL.md`](../.agents/skills/modo-arquiteto/SKILL.md) | Entrevistas (Fase 0 e pré-Fase A com apoio de tldraw/diagrams.net), definição de pastas, criação física de novas Skills, *Stack Lock* e *Contract Freeze*. |
-| **`[modo-dados]`** | [`.agents/skills/modo-dados/SKILL.md`](../.agents/skills/modo-dados/SKILL.md) | Definir onde colher dados, schemas, Planilha-Oráculo (`docs/golden-oracle.csv`), Snapshot de Diagnóstico JSON e exportação. |
-| **`[modo-fluxos]`** | [`.agents/skills/modo-fluxos/SKILL.md`](../.agents/skills/modo-fluxos/SKILL.md) | Mapear e corrigir jornadas e máquinas de estado (com apoio visual no início/fim via tldraw e diagrams.net). |
-| **`[modo-uiux]`** | [`.agents/skills/modo-uiux/SKILL.md`](../.agents/skills/modo-uiux/SKILL.md) | Gerar `docs/DESIGN.md`, operar o ciclo `StitchMCP` (Template Mestre e novas páginas), baixar gabaritos em `docs/ui-templates/` e extrair `src/ui/design-system/`. |
-| **`[modo-backend]`** | [`.agents/skills/modo-backend/SKILL.md`](../.agents/skills/modo-backend/SKILL.md) | Implementar regras de negócio puras (< 250 linhas) reconciliadas com a Planilha-Oráculo (`docs/golden-oracle.csv`). |
-| **`[modo-frontend]`** | [`.agents/skills/modo-frontend/SKILL.md`](../.agents/skills/modo-frontend/SKILL.md) | Construir telas modulares (< 250 linhas) a partir de `docs/ui-templates/` e `src/ui/design-system/`, conectadas às Fachadas. |
-| **`[modo-auditor]`** | [`.agents/skills/modo-auditor/SKILL.md`](../.agents/skills/modo-auditor/SKILL.md) | Rodar `scan-vibecode.ps1`, inspecionar o app (**100% Read-Only no código**) e gerar o Dossiê de Correção pós-`/compact`. |
+### 2) Criar Nova Ferramenta / Plug (`[modo-mestre]` $\rightarrow$ Perfil `Implementador P/M/G`)
+```text
+Ativar [modo-mestre]. Quero adicionar a ferramenta "[NOME]" sobre a espinha atual para resolver [dor única do Dia 1]. Faça a Entrevista Navalha (enquadrando Porte P/M/G) e gere o 1-Protótipo clicável.
+```
 
-### 4.2 Modos Especialistas Criados para Este App
-> *O `[modo-arquiteto]` listará abaixo todas as Skills extras criadas fisicamente em `.agents/skills/` antes da Fase A:*
-- `{{PREENCHER_NA_FASE_0: ex. [modo-calculo-financeiro] -> .agents/skills/modo-calculo-financeiro/SKILL.md}}`
+### 3) Evoluir Ferramenta ou Espinha Existente (`[modo-mestre]` $\rightarrow$ Perfil `Refinador`)
+```text
+Ativar [modo-mestre] (Refinador). Na frente docs/planos/ativos/PLANO_[SLUG].md (ou [caminho]), quero acrescentar/refinar [descreva a melhoria]. Verifique a Memória Negativa, retrocompatibilidade (.optional().default) e < 250 LOC.
+```
 
----
+### 4) Executar `2-MVP` ou `3-Consolidada` de Uma Frente
+```text
+Ativar [modo-backend] (ou [modo-dados] / [modo-frontend]). Leia L1–L25 e a seção 2-MVP de docs/planos/ativos/PLANO_[SLUG].md e entregue apenas esta camada (Step-Budget), validando com scan-vibecode.ps1 -TargetPaths.
+```
 
-## 5. Tabela de Roteamento Obrigatório ("Vai fazer X? Leia o arquivo Y")
+### 5) Auditar Frente Isolada (`[modo-auditor]`)
+```text
+Ativar [modo-auditor]. Execute a Fase 1 (scan-vibecode.ps1 -TargetPaths + Raio-X Leve) da frente docs/planos/ativos/PLANO_[SLUG].md e apresente as Lentes da Fase 2 antes de ler o restante do código.
+```
 
-| Atividade / Modo Ativo | Arquivos de Leitura Obrigatória (*Pre-Flight*) | Arquivos que Pode Editar |
-| :--- | :--- | :--- |
-| **Iniciar qualquer chat** | [`AGENTS.md`](../AGENTS.md) + [`STATE.md`](../STATE.md) | [`STATE.md`](../STATE.md) (ao finalizar) |
-| **Planejar / Arquitetar (`[modo-arquiteto]`)** | Todos em `docs/` | `docs/*` e `.agents/skills/*` |
-| **Modelar Dados / I-O (`[modo-dados]`)** | [`01-GUIDELINES-VIBECODE.md`](./01-GUIDELINES-VIBECODE.md) + [`03-CONTRATOS-DADOS.md`](./03-CONTRATOS-DADOS.md) | `docs/03-CONTRATOS-DADOS.md`, `docs/golden-oracle.csv`, contratos, schemas, mocks e snapshot |
-| **Mapear Fluxos (`[modo-fluxos]`)** | [`02-ARQUITETURA-FLUXOS.md`](./02-ARQUITETURA-FLUXOS.md) + [`03-CONTRATOS-DADOS.md`](./03-CONTRATOS-DADOS.md) | `docs/02-ARQUITETURA-FLUXOS.md`, orquestradores de estado/fluxo |
-| **Design System & Stitch (`[modo-uiux]`)** | [`01-GUIDELINES-VIBECODE.md`](./01-GUIDELINES-VIBECODE.md) + [`04-PADRAO-UIUX.md`](./04-PADRAO-UIUX.md) + [`DESIGN.md`](./DESIGN.md) | `docs/DESIGN.md`, `docs/04-PADRAO-UIUX.md`, `docs/ui-templates/*`, `src/ui/design-system/*` |
-| **Codar Core/Backend (`[modo-backend]`)** | [`01-GUIDELINES-VIBECODE.md`](./01-GUIDELINES-VIBECODE.md) + [`02-ARQUITETURA-FLUXOS.md`](./02-ARQUITETURA-FLUXOS.md) + [`03-CONTRATOS-DADOS.md`](./03-CONTRATOS-DADOS.md) + `docs/golden-oracle.csv` | Módulos de domínio, serviços, cálculos e persistência |
-| **Codar Telas (`[modo-frontend]`)** | [`01-GUIDELINES-VIBECODE.md`](./01-GUIDELINES-VIBECODE.md) + [`03-CONTRATOS-DADOS.md`](./03-CONTRATOS-DADOS.md) + [`04-PADRAO-UIUX.md`](./04-PADRAO-UIUX.md) + `docs/ui-templates/*` | Páginas, views, hooks visuais e composição de telas |
-| **Auditar (`[modo-auditor]`)** | Saída do `scan-vibecode.ps1` + Documento-régua da área + código-fonte | **APENAS** `docs/audits/AUDIT-ATUAL.md` e `STATE.md` (**Zero edição de código**) |
-
----
-
-## 6. Como Reutilizar Este Kit Base em Novos Projetos
-
-Para iniciar qualquer novo aplicativo do zero com esta metodologia:
-1. Copie `AGENTS.md`, `STATE.md`, a pasta `.agents/skills/` (com os 7 modos base e o script `scan-vibecode.ps1`) e a pasta `docs/` para a raiz do novo projeto.
-2. Abra o **Chat 01** no novo projeto e digite:
-   > `Ativar [modo-arquiteto]. Vamos iniciar a Fase 0 (Regra 01) para um novo aplicativo.`
+### 6) Bugfix Cirúrgico (`[modo-hotfix]`)
+```text
+Ativar [modo-hotfix]. Em [caminho/do/arquivo], corrija diretamente [descreva o defeito] sem mudar escopo nem ler arquivos fora do alvo.
+```

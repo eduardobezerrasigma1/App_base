@@ -1,6 +1,6 @@
-# docs/ui-templates/ — Gabaritos Visuais Consolidados (StitchMCP)
+# docs/ui-templates/ — Gabaritos Visuais Opcionais Consolidados (StitchMCP)
 
-Esta pasta armazena os templates HTML e screenshots oficiais consolidados a partir do **Stitch** via `StitchMCP:download_file`.
+Esta pasta armazena templates HTML e screenshots consolidados opcionalmente a partir do **Stitch** via `StitchMCP:download_file` (quando acionado sob demanda no `App 0` / `[modo-uiux]`; a prototipação diária do `1-Protótipo` roda diretamente via `generative_ui`).
 
 ## Convenção de Arquivos
 - `00-template-mestre.html` / `00-template-mestre.png`: O Template Mestre (AppShell + Componentes-Base do Design System).

@@ -1,4 +1,4 @@
-# PLANILHA-ORÁCULO (GOLDEN ORACLE) — SUBSTITUIR NA FASE 0/A PELOS CASOS REAIS DO APP NO EXCEL/SHEETS
+# PLANILHA-ORÁCULO (GOLDEN ORACLE) — SUBSTITUIR NO APP 0 / 2-MVP PELOS CASOS REAIS DO APP NO EXCEL/SHEETS
 # Formato esperado: colunas de entrada seguidas pelas colunas de resultado esperado (exato)
 cenario,entrada_1,entrada_2,resultado_esperado_exato,observacao
 caso_feliz_01,100.00,3,33.33,Exemplo de arredondamento controlado
